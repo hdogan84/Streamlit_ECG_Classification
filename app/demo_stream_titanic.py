@@ -11,7 +11,7 @@ from sklearn.neighbors import KNeighborsClassifier
 
 # Custom function
 # st.cache is used to load the function into memory
-@st.cache
+@st.cache_data
 def train_model(model_choisi, X_train, y_train, X_test, y_test) :
     if model_choisi == 'Regression Logisitic' : 
         model = LogisticRegression()
