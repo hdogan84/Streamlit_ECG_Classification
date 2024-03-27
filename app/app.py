@@ -11,7 +11,7 @@ def main():
     liste_menu = ["bases streamlit", "demo_ML"]
 
     # Sidebar
-    menu = st.sidebar.selectbox("selectionner votre activité", liste_menu)
+    menu = st.sidebar.selectbox("Select your choice", liste_menu)
 
     # Page navigation
     if menu == liste_menu[0]:
