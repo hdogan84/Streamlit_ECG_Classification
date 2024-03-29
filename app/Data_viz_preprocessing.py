@@ -8,49 +8,29 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
+from functions import train_model, download_datasets, show_download_code_Kaggle, load_datasets_in_workingspace
 
-# Custom function
-# st.cache is used to load the function into memory
-@st.cache_data
-def train_model(model_choisi, X_train, y_train, X_test, y_test) :
-    if model_choisi == 'Regression Logisitic' : 
-        model = LogisticRegression()
-    elif model_choisi == 'Decision Tree' : 
-        model = DecisionTreeClassifier()
-    elif model_choisi == 'KNN' : 
-        model = KNeighborsClassifier()
-    model.fit(X_train, y_train)
-    score = model.score(X_test, y_test)
-    return score
 
-def demo_streamlit():
+def Data_viz_preprocessing():
 
     ### Create Title
-    st.title("Streamlit Machine Learning Web app with Streamlit")
-    st.header("The beginning of a great adventure")
-    st.subheader("By DataScientest team")
-
-    ### Add a picture
-    st.write("Below is a picture of the Titanic:")
-    st.image("titanic.jpeg")
-
-
-    ### using Markdown
-    st.markdown("### We will use the well famous titanic dataset for our study. Can we predict who survived?")
-
-    ### reading dataset
-    # Normally, you will store all the necessary path and env variables in a .env file
-    dataset_path = '../data/titanic.csv'
-    df = pd.read_csv(dataset_path)
-
-
+    st.title("Datavizualization and Preprocessing")
+    st.write("As shown in the Introduction page the raw data from Kaggle was already preprocessed and segmented well enough to start directly with data exploration. No extensive preprocessing steps had to be performed.")
+    st.header("Datavizualization")
+    st.subheader("Downloading the Datasets from Kaggle")
+    st.write("We implemented a handy function to directly download the datasets from Kaggle:")
+    # Code collapsible section
+    show_download_code_Kaggle() #calls the function to show the downloaded code since this takes large volume of code...
+    st.write("All Datasets are stored in a local folder, since they are too big to be pushed onto github (>100 mb).")
+    mitbih_test, mitbih_train, ptbdb_abnormal, ptbdb_normal = load_datasets_in_workingspace()
+    
     ### Showing code
-    st.text("importing dataset with the folowing command: ")
+    st.text("importing datasets in our workspace with the following command: ")
     with st.echo(): 
-        df = pd.read_csv(dataset_path)
+            mitbih_test, mitbih_train, ptbdb_abnormal, ptbdb_normal = load_datasets_in_workingspace()
 
 
-    ### Showing the data
+    """### Showing the data
     if st.checkbox("Showing the data") :
         line_to_plot = st.slider("select le number of lines to show", min_value=3, max_value=df.shape[0])
         st.dataframe(df.head(line_to_plot))
@@ -104,4 +84,4 @@ def demo_streamlit():
 
     # Showing the accuracy for the orthers models (for comparison)
     st.write("Accuracy for some models for comparison: ")
-    st.write("Score test", train_model(model_choisi, X_train, y_train, X_test, y_test))
+    st.write("Score test", train_model(model_choisi, X_train, y_train, X_test, y_test))"""

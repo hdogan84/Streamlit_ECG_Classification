@@ -2,8 +2,8 @@
 import streamlit as st
 
 # Custom modules
-from streamlit_base import Introduction # Introduction page function
-from demo_stream_titanic import demo_streamlit # Basic ML web app with stremlit
+from Introduction_page import Introduction # Introduction page function
+from Data_viz_preprocessing import Data_viz_preprocessing # Basic ML web app with stremlit
 
 def main():
 
@@ -17,7 +17,7 @@ def main():
     if menu == liste_menu[0]:
         Introduction()
     elif menu == liste_menu[1]:
-        demo_streamlit()
+        Data_viz_preprocessing()
     elif menu == liste_menu[2]:
         st.title("Here will be some model selection for Modeling Stage 1 (ML Models)")
         st.header("therefore a new submodule with specific functions has to be created.")
