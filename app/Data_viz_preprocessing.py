@@ -8,7 +8,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
-from functions import train_model, download_datasets, show_download_code_Kaggle, load_datasets_in_workingspace
+from functions import train_model, download_datasets, show_download_code_Kaggle, load_datasets_in_workingspace, plot_random_row
 
 
 def Data_viz_preprocessing():
@@ -29,59 +29,8 @@ def Data_viz_preprocessing():
     with st.echo(): 
             mitbih_test, mitbih_train, ptbdb_abnormal, ptbdb_normal = load_datasets_in_workingspace()
 
-
-    """### Showing the data
-    if st.checkbox("Showing the data") :
-        line_to_plot = st.slider("select le number of lines to show", min_value=3, max_value=df.shape[0])
-        st.dataframe(df.head(line_to_plot))
-
-    if st.checkbox("Missing values") : 
-        st.dataframe(df.isna().sum())
-
-
-    ### Preprocessing 
-
-    # Drop Missing values
-    df = df.dropna()
-
-    # Drop some columns
-    df = df.drop(['sex', 'title', 'cabin', 'embarked'], axis = 1)
-
-    # Select the target
-    y = df['survived']
-
-    # Select the features
-    X = df.drop('survived', axis =1 )
-
-    # select how to split the data
-    train_size = st.sidebar.slider(label = "Choix de la taille de l'échantilllon de train", min_value = 0.2, max_value = 1.0, step = 0.05)
-
-    # Splitting the data
-    X_train, X_test, y_train, y_test = train_test_split(X, y, train_size = train_size)
-
-
-    ### Display graph
-    st.text('Class distribution with seaborn')
-    st.set_option('deprecation.showPyplotGlobalUse', False)
-    sns.countplot(df['pclass'])
-    st.pyplot()
-
-    ### Classification 
-
-    #  Baseline model
-    model = LogisticRegression() 
-
-    # Model training
-    model.fit(X_train, y_train)
-
-    # Benchmark Model evaluation
-    st.write("Logisitic regression accuracy (This is my Benchmark):" , model.score(X_test,y_test))
-
-    # Other models
-    model_list = ['Decision Tree', 'KNN']
-    model_choisi = st.selectbox(label = "Select a model" , options = model_list)
-
-
-    # Showing the accuracy for the orthers models (for comparison)
-    st.write("Accuracy for some models for comparison: ")
-    st.write("Score test", train_model(model_choisi, X_train, y_train, X_test, y_test))"""
+    #Checkbox for the button
+    is_button_enabled = st.checkbox("Show random plotting")
+    if is_button_enabled:
+          if st.button("Plot random row from random Dataset"):
+            plot_random_row()

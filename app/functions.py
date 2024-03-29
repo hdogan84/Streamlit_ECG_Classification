@@ -5,6 +5,7 @@ import seaborn as sns
 import streamlit as st 
 import matplotlib.pyplot as plt 
 import numpy as np 
+import pandas as pd
 from sklearn.model_selection import train_test_split 
 from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
@@ -126,3 +127,85 @@ def load_datasets_in_workingspace(path_to_datasets="/home/simon/Datascientest_He
     ptbdb_abnormal = pd.read_csv(path_to_datasets + "/" + "ptbdb_abnormal.csv",header=None)
     ptbdb_normal = pd.read_csv(path_to_datasets + "/" + "ptbdb_normal.csv",header=None)
     return mitbih_test, mitbih_train, ptbdb_abnormal, ptbdb_normal
+
+
+@st.cache_data
+def calculate_average_values(dataset_folder, dataset_names):
+    """
+    Calculates average values for each class in each dataset.
+    Is used in the plot_random_row function --> The calculation of the mean values is always the same and must not be repeated!
+    Args:
+    - dataset_folder (str): Path to the folder containing the datasets.
+    - dataset_names (list of str): List of dataset names.
+
+    Returns:
+    - average_values (dict): Dictionary containing average values for each class in each dataset.
+    """
+    average_values = {}
+    for dataset_name in dataset_names:
+        df = pd.read_csv(f"{dataset_folder}/{dataset_name}")
+        df_columns = df.columns.tolist()
+        target_column = df_columns[-1]
+        average_values[dataset_name] = df.groupby(target_column).mean().values
+    return average_values
+
+#@st.cache_data is not necessary, because this function is always called with random row numbers?
+def plot_random_row(dataset_folder = "/home/simon/Datascientest_Heartbeat/jan24_bds_int_heartbeat/data/KAGGLE_datasets/heartbeat", dataset_names = ["mitbih_test.csv", "mitbih_train.csv", "ptbdb_abnormal.csv", "ptbdb_normal.csv"]):
+    """
+    Plots a random row from one of the datasets.
+
+    Args:
+    - dataset_folder (str): Path to the folder containing the datasets.
+    - dataset_names (list of str): List of dataset names.
+    """
+    # Load average values
+    average_values = calculate_average_values(dataset_folder, dataset_names)
+    #dictionary for classes --> This should be a globally available dict, so that it cannot be changed from somewhere else.
+    disease_names_mitbih = {0: "Normal", 1: "Supraventricular", 2: "Ventricular", 3: "Fusion V and N", 4: "Paced / Fusion Paced and Normal / Unknown"}
+    disease_names_ptbdb = {0: "Normal", 1: "Abnormal"}
+    # Select a random dataset
+    selected_dataset = np.random.choice(dataset_names)
+
+    # Load the dataset
+    dataset_path = f"{dataset_folder}/{selected_dataset}"
+    df = pd.read_csv(dataset_path)
+
+    # Define custom color palette for dashed lines
+    colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
+    num_classes = len(average_values[selected_dataset])
+    color_palette = colors[:num_classes]
+
+    # Select a random row
+    random_row_index = np.random.randint(len(df))
+    random_row = df.iloc[random_row_index]
+
+    # Plot the random row
+    plt.figure(figsize=(10, 6))
+    plt.plot(random_row[:-1], label="Random Row")  # Exclude the last column (target)
+     # Plot average values for each class in the background with dashed lines
+    if "ptbdb" in selected_dataset:
+        ptbdb_datasets = {"ptbdb_abnormal.csv": "Abnormal", "ptbdb_normal.csv": "Normal"}
+        for dataset, class_label in ptbdb_datasets.items():
+            class_avg = average_values[dataset]
+            plt.plot(class_avg, linestyle='--', color=color_palette[0], alpha=0.8, label=f"{class_label} Average")
+    else:
+        for i, class_avg in enumerate(average_values[selected_dataset]):
+            class_label = disease_names_mitbih[i]
+            plt.plot(class_avg, linestyle='--', color=color_palette[i], alpha=0.8, label=f"{class_label} Average")
+
+    plt.title(f"Random Row ({random_row_index}) from {selected_dataset} Dataset")
+    plt.xlabel("Timesteps in ms")
+    plt.ylabel("Normalized ECG Amplitude")
+    plt.grid(True)
+    x_ticks_positions = np.arange(0, 188, 10) #Positions of the x-ticks (we choose an tick for every 10th position)
+    x_tick_labels = [i * 8 for i in x_ticks_positions] #each timestep is 8ms long, already multiplied by 10 due to x_ticks_positions..
+    plt.xticks(x_ticks_positions, x_tick_labels) #we can now change the x_ticks accordingly.
+    plt.legend()
+    st.pyplot()
+
+    # Show the target column with disease names
+    dataset_disease_names = disease_names_mitbih if selected_dataset == "MITBIH" else disease_names_ptbdb
+    target_value = random_row.iloc[-1]
+    heartbeat_class = dataset_disease_names.get(target_value, "Unknown")
+
+    st.write("Classification of Heartbeat:", heartbeat_class)
