@@ -2,61 +2,35 @@
 import streamlit as st
 
 def bases_streamlit():
-    # streamlit features
-    # TEXT
-    # titre
-    st.title("Streamlit crash course 101:")
+    st.title("Heartbeat Classification")
 
-    # texte
-    st.text("This simply show a text")
+    st.write("Our project focuses on analyzing and predicting ECG heartbeat patterns and abnormalities. We've explored various methods, including simple Machine Learning Models and neural networks, using the Kaggle ECG Heartbeat Categorization Dataset.")
 
-    # header \ subheader
-    st.header("This is a Header")
-    st.subheader('This a Subheader')
+    st.header("Key Points:")
+    st.markdown("- **Approaches:** Implemented both simple models and neural networks.")
+    st.markdown("- **Dataset:** Utilized the Kaggle ECG Heartbeat Categorization Dataset.")
+    st.markdown("- **Accuracy:** Achieved high accuracy scores with simple models in predicting overall heartbeat pattern shape and distinguishing between normal and abnormal patterns.")
+    st.markdown("- **Neural Networks:** Marginally higher accuracy scores observed, with a tendency towards 'conservativeness' – favoring false positives, which is desirable in medical applications.")
+    st.markdown("- **Next Steps:** These initial findings pave the way for further exploration into neural networks' behavior in detecting ECG heartbeat patterns.")
 
-    # MARKDOWN
-    st.markdown("## This is a markdown")
-
-    # Link
-    st.markdown('[Google link](https://google.com)')
-    
-    # Write HTML
-    st.write("You can write HTML")
-    html_page = """
-    <div style="background-color:green;padding:50px">
-        <p style="font-size:50px">Streamlit is very awesome</p>
-    </div>
-    """
-    st.markdown(html_page, unsafe_allow_html=True)
-    
-    #html_form = """
-    #<div> 
-    #    <form>
-    #    <input type="text" name="firstname"/>
-    #    </form>
-    #</div>
-    #"""
-    #st.markdown(html_form, unsafe_allow_html=True)
-    
-    # Alert text
-    st.write("Alert text")
-
-    st.success("Success!")
-    st.info("Information")
-    st.warning("Un warning!")
-    st.error("Une erreur")
-    
     ## MEDIA
     # Image
     # import Image function
     from PIL import Image
-    st.write("ouverture d'une image:")
+    st.header("Overview on the workflow")
 
     # open an image
     img = Image.open("OIP (2).jpeg")
 
     # Plot the image
     st.image(img, caption="DataScientest")
+
+    st.header("For More Information:")
+    st.write("Explore the full original research paper at: [IEEE Xplore](https://ieeexplore.ieee.org/document/8419425)")
+    st.write("Explore the original dataset at: [Kaggle](https://www.kaggle.com/datasets/shayanfazeli/heartbeat)")
+
+    
+    
     
     # Audio
     #audio_file = open('name_of_file.ext', "rb")
