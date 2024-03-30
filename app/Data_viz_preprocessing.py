@@ -9,6 +9,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from functions import train_model, download_datasets, show_download_code_Kaggle, load_datasets_in_workingspace, plot_random_row
+from functions import calculate_average_values #just for debugging, remove later.
 
 
 def Data_viz_preprocessing():
@@ -34,3 +35,19 @@ def Data_viz_preprocessing():
     if is_button_enabled:
           if st.button("Plot random row from random Dataset"):
             plot_random_row()
+
+
+    #debugging the calculate averages function --> Can be used for further functions with selections of one dataset.
+    is_check_output_avg_values = st.checkbox("Test the outpout of the calculate average values function:")
+    if is_check_output_avg_values:
+         debug_avg_values = calculate_average_values(dataset_folder = "/home/simon/Datascientest_Heartbeat/jan24_bds_int_heartbeat/data/KAGGLE_datasets/heartbeat", dataset_names = ["mitbih_test.csv", "mitbih_train.csv", "ptbdb_abnormal.csv", "ptbdb_normal.csv"])
+         selected_key = st.selectbox("Select a dataset key:", options=list(debug_avg_values.keys()))
+         st.write(f"Key: {selected_key}")
+         st.write(debug_avg_values[selected_key])
+         for i, class_avg in enumerate(debug_avg_values[selected_key]):
+            #class_label = disease_names_mitbih[i]
+            plt.plot(class_avg, linestyle='--', alpha=0.8) #, label=f"{class_label} Average", , color=color_palette[i],
+         st.pyplot()
+        
+
+         

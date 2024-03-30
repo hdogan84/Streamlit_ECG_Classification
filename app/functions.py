@@ -171,10 +171,8 @@ def plot_random_row(dataset_folder = "/home/simon/Datascientest_Heartbeat/jan24_
     df = pd.read_csv(dataset_path)
 
     # Define custom color palette for dashed lines
-    colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
-    num_classes = len(average_values[selected_dataset])
-    color_palette = colors[:num_classes]
-
+    color_palette = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
+    
     # Select a random row
     random_row_index = np.random.randint(len(df))
     random_row = df.iloc[random_row_index]
@@ -184,10 +182,10 @@ def plot_random_row(dataset_folder = "/home/simon/Datascientest_Heartbeat/jan24_
     plt.plot(random_row[:-1], label="Random Row")  # Exclude the last column (target)
      # Plot average values for each class in the background with dashed lines
     if "ptbdb" in selected_dataset:
-        ptbdb_datasets = {"ptbdb_abnormal.csv": "Abnormal", "ptbdb_normal.csv": "Normal"}
-        for dataset, class_label in ptbdb_datasets.items():
-            class_avg = average_values[dataset]
-            plt.plot(class_avg, linestyle='--', color=color_palette[0], alpha=0.8, label=f"{class_label} Average")
+        ptbdb_datasets = {"ptbdb_normal.csv": "Normal", "ptbdb_abnormal.csv": "Abnormal"}
+        for i, (dataset, class_label) in enumerate(ptbdb_datasets.items()):
+            class_avg = average_values[dataset][0] #this is the key to make it work --> THe output list was doubled [[]], i don´t exactly know why
+            plt.plot(class_avg, linestyle='--', color=color_palette[i], alpha=0.8, label=f"{class_label} Average")
     else:
         for i, class_avg in enumerate(average_values[selected_dataset]):
             class_label = disease_names_mitbih[i]
