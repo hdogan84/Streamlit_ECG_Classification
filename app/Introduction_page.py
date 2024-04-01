@@ -18,6 +18,21 @@ def Introduction():
     st.header("Overview on the workflow")
     displayPDF("../assets/Workflow_Heartbeat.pdf", width=800, height=500, caption="The workflow used in the project. Steps with green checks were performed already by the original authors of the main paper.")
 
+    from PIL import Image
+    st.header("Dataset Information")
+     # open an image
+    img = Image.open("../assets/Report1_Table1.png")
+
+    # Plot the image
+    st.image(img)
+    st.subheader("Classwise Distribution for MITBIH")
+    mitbih_text = "MITBIH dataset consists of 5 classes \nwhere the label 'n' shows the 'normal' class"
+    st.text(mitbih_text)
+
+    img2 = Image.open("../assets/Report1_Fig1.png")
+    # Plot the image
+    st.image(img2)
+    
     #More Information
     st.header("For More Information on the projects background:")
     st.write("Explore the full original research paper at: [IEEE Xplore](https://ieeexplore.ieee.org/document/8419425)")
