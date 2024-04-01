@@ -48,6 +48,22 @@ def Data_viz_preprocessing():
             #class_label = disease_names_mitbih[i]
             plt.plot(class_avg, linestyle='--', alpha=0.8) #, label=f"{class_label} Average", , color=color_palette[i],
          st.pyplot()
-        
+
+    from PIL import Image
+    st.write("Mean values of time signals in MITBIH Train set")
+
+    # open an image
+    img = Image.open("../assets/Report1_Fig4_Mitbih_train.png")
+
+    # Plot the image
+    st.image(img)
+
+    st.write("Mean values of time signals in MITBIH Test set")
+
+    # open an image
+    img2 = Image.open("../assets/Report1_Fig4_Mitbih_test.png")
+
+    # Plot the image
+    st.image(img2)
 
          
