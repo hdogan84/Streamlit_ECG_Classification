@@ -12,6 +12,7 @@ from functions import train_model, download_datasets, show_download_code_Kaggle,
 from functions import load_pkl_model 
 from sklearn.metrics import accuracy_score, classification_report
 import tensorflow as tf
+import keras
 
 
 def predict_with_DL():
@@ -30,10 +31,12 @@ def predict_with_DL():
 
     #Checkbox for the button
     st.subheader("MITBIH predictions")
-    model = build_model_adv_cnn(model_path)
-    print(model.summary())
-
+    #model = build_model_adv_cnn(model_path)
     #model.load_weights("../assets/experiment_4_MITBIH_A_Original.weights.h5")
+
+    model = tf.keras.saving.load_model("../assets/experiment_4_MITBIH_A_Original.keras")
+
+    print(model.summary())
 
     predictions = model.predict(X_test).argmax(axis=1)
     print(predictions.shape)
