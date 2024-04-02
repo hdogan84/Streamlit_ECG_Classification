@@ -58,7 +58,7 @@ def build_model_adv_cnn(model_filepath):
     adv_cnn_model.add(tf.keras.layers.Dense(20, activation=tf.keras.layers.LeakyReLU(alpha=0.001)))
     adv_cnn_model.add(tf.keras.layers.Dense(5, activation='softmax'))
     
-    adv_cnn_model.load_weights("/kaggle/input/ecg-cnn-bestmodels/experiment_4_MITBIH_A_Original.weights.h5")
+    adv_cnn_model.load_weights("../assets/experiment_4_MITBIH_A_Original.weights.h5")
     #adv_cnn_model.load_weights("/kaggle/input/ecg-cnn-bestmodels/experiment_4_MITBIH_A_Original.weights.h5")
 
     return adv_cnn_model
