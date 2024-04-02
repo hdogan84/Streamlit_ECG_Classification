@@ -16,12 +16,7 @@ import tensorflow as tf #Version 2.13.0 is required since this was used by Kaggl
 
 def Page_DL_Stage_2(data_path = "../data/heartbeat", model_path = "/home/simon/demo_streamlit_jan22cds_en/assets/experiment_4_MITBIH_A_Original.weights.h5"):
     
-    #data_path = "C:/Users/dgnhk/dst_project/heartbeat_data"
-    #data_path = "/home/simon/Datascientest_Heartbeat/jan24_bds_int_heartbeat/data/KAGGLE_datasets/heartbeat"
-    #RF Classifier model pickle filepath
-    #model_path = "/home/simon/demo_streamlit_jan22cds_en/assets/experiment_4_MITBIH_A_Original.weights.h5"
-
-    ### Create Title
+       ### Create Title
     st.title("Predicting with DL")
     st.write(f"Tensorflow version for debugging: {tf.__version__}")
     mitbih_test, mitbih_train, ptbdb_abnormal, ptbdb_normal = load_datasets_in_workingspace(data_path)
@@ -73,7 +68,7 @@ def build_model_adv_cnn(model_filepath):
 
     return adv_cnn_model
 
-    
+
 
     
 
