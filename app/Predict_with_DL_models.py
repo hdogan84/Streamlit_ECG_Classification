@@ -11,18 +11,19 @@ from sklearn.neighbors import KNeighborsClassifier
 from functions import train_model, download_datasets, show_download_code_Kaggle, load_datasets_in_workingspace, plot_random_row
 from functions import load_pkl_model 
 from sklearn.metrics import accuracy_score, classification_report
-import tensorflow as tf
+import tensorflow as tf #Version 2.13.0 is required since this was used by Kaggle to produce the .weights.h5 files
 
 
-def predict_with_DL():
+def Page_DL_Stage_2(data_path = "../data/heartbeat", model_path = "/home/simon/demo_streamlit_jan22cds_en/assets/experiment_4_MITBIH_A_Original.weights.h5"):
     
-    data_path = "C:/Users/dgnhk/dst_project/heartbeat_data"
+    #data_path = "C:/Users/dgnhk/dst_project/heartbeat_data"
     #data_path = "/home/simon/Datascientest_Heartbeat/jan24_bds_int_heartbeat/data/KAGGLE_datasets/heartbeat"
     #RF Classifier model pickle filepath
-    model_path = "C:/Users/dgnhk/demo_streamlit_jan22cds_en/assets/experiment_4_MITBIH_A_Original.weights.h5"
+    #model_path = "/home/simon/demo_streamlit_jan22cds_en/assets/experiment_4_MITBIH_A_Original.weights.h5"
 
     ### Create Title
     st.title("Predicting with DL")
+    st.write(f"Tensorflow version for debugging: {tf.__version__}")
     mitbih_test, mitbih_train, ptbdb_abnormal, ptbdb_normal = load_datasets_in_workingspace(data_path)
     
     y_test = mitbih_test[187]
@@ -31,12 +32,21 @@ def predict_with_DL():
     #Checkbox for the button
     st.subheader("MITBIH predictions")
     model = build_model_adv_cnn(model_path)
-    predictions = model.predict(X_test)
-    report = classification_report(y_test, predictions, digits=4)
-    st.text(report)
+    predictions = model.predict(X_test).argmax(axis=1)
+    report = classification_report(y_test, predictions, digits=4, output_dict=True)
+    st.dataframe(report)
 
     from PIL import Image
     st.write("Confusion Matrix as a picture could be good here")
+
+    st.header(":red[Notes for further Improvement:]")
+    st.write("Make a selection routine instead of predefined tables:")
+    st.write("- Select Dataset")
+    st.write("- select the ML Models that should be compared together")
+    st.write("- Select the comparison Method:")
+    st.write("- - Single Row: Use a single row (random) to predict --> Compare the real class with the predicted classes of the selected models.")
+    st.write("- - Complete Dataset: Print classification reports, confusion matrix, bar plots with metrics for each model selected or find a way to show all results in one single plot (like results plot in the report)")
+    st.write("- Print / plot the results")
 
 # build model and load weights from h5 file
 def build_model_adv_cnn(model_filepath):
@@ -57,8 +67,8 @@ def build_model_adv_cnn(model_filepath):
     adv_cnn_model.add(tf.keras.layers.Dense(60, activation=tf.keras.layers.LeakyReLU(alpha=0.001)))
     adv_cnn_model.add(tf.keras.layers.Dense(20, activation=tf.keras.layers.LeakyReLU(alpha=0.001)))
     adv_cnn_model.add(tf.keras.layers.Dense(5, activation='softmax'))
-    
-    adv_cnn_model.load_weights("../assets/experiment_4_MITBIH_A_Original.weights.h5")
+    st.write("Model is build and loading should be done now...")
+    adv_cnn_model.load_weights(model_filepath,)
     #adv_cnn_model.load_weights("/kaggle/input/ecg-cnn-bestmodels/experiment_4_MITBIH_A_Original.weights.h5")
 
     return adv_cnn_model
