@@ -18,8 +18,7 @@ def predict_with_DL():
     
     data_path = "C:/Users/dgnhk/dst_project/heartbeat_data"
     #data_path = "/home/simon/Datascientest_Heartbeat/jan24_bds_int_heartbeat/data/KAGGLE_datasets/heartbeat"
-     #RF Classifier model pickle filepath
-    rfc_path = "C:/Users/dgnhk/demo_streamlit_jan22cds_en/assets/RFC_Optimized_Model_with_Gridsearch_MITBIH_A_Original.pkl"
+    #RF Classifier model pickle filepath
     model_path = "C:/Users/dgnhk/demo_streamlit_jan22cds_en/assets/experiment_4_MITBIH_A_Original.weights.h5"
 
     ### Create Title
