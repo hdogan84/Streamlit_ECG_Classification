@@ -15,6 +15,9 @@ import os
 import pickle
 from kaggle.api.kaggle_api_extended import KaggleApi
 
+st.set_option('deprecation.showPyplotGlobalUse', False) #removing errors from beeing shown.
+#known futurewarnings: st.pyplot() should not be called without arguments (e.g. "fig").
+
 """
 Important Notes:
 - the filepaths have to be relative, i.e. like this "../assets/[file in the assets folder]". In order to use this correctly, the command "streamlit runn app.py" has to be used
