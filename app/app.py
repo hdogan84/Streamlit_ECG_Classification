@@ -6,7 +6,7 @@ import streamlit as st
 from Introduction_page import Introduction # Introduction page function
 from Data_viz_preprocessing import Data_viz_preprocessing # Basic ML web app with stremlit
 from Predict_with_ML_models import predict_with_ML
-from Predict_with_DL_models import predict_with_DL
+from Predict_with_DL_models import build_model_adv_cnn, predict_with_DL
 
 
 def main():
