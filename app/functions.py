@@ -15,7 +15,15 @@ import os
 import pickle
 from kaggle.api.kaggle_api_extended import KaggleApi
 
+st.set_option('deprecation.showPyplotGlobalUse', False) #removing errors from beeing shown.
+#known futurewarnings: st.pyplot() should not be called without arguments (e.g. "fig").
 
+"""
+Important Notes:
+- the filepaths have to be relative, i.e. like this "../assets/[file in the assets folder]". In order to use this correctly, the command "streamlit runn app.py" has to be used
+--> Therefore one has to navigate directly into the folder where the app.py folder is located! --> This is good to remember for now, but especially good to remember when trying to deploy our app?
+
+"""
 
 def displayPDF(file, width=1000, height=700, caption=None):
     """
@@ -53,9 +61,8 @@ def train_model(model_choisi, X_train, y_train, X_test, y_test) :
 
 @st.cache_data
 def load_pkl_model(model_path_pkl):
-    pkl_file = open(model_path_pkl, 'rb')
-    model = pickle.load(pkl_file)
-    pkl_file.close()
+    with open(model_path_pkl, "rb") as pickle_file:
+        model = pickle.load(pickle_file)
     return model
 
 @st.cache_data
@@ -73,24 +80,24 @@ def download_datasets(download_path, dataset_owner="shayanfazeli", dataset_name=
     api.authenticate()
 
     # Check if the dataset folder already exists
-    if not os.path.exists(dataset_folder):
+    if not os.path.exists(download_path):
         # Dataset folder does not exist --> Download and save the datasets
-        api.dataset_download_files(dataset_owner + "/" + dataset_name, path=os.path.join(download_path, dataset_name), unzip=True)
-        print("Datasets are downloaded and unzipped.")
+        api.dataset_download_files(dataset_owner + "/" + dataset_name, path=download_path, unzip=True) #=os.path.join(download_path, dataset_name)
+        st.write("Datasets are downloaded and unzipped.")
     else:
         # Dataset folder exists, but datasets might be missing
         missing_files = [] 
         for file_name in ["mitbih_test.csv", "mitbih_train.csv", "ptbdb_abnormal.csv", "ptbdb_normal.csv"]:  
-            file_path = os.path.join(dataset_folder, file_name)
+            file_path = os.path.join(download_path, file_name)
             if not os.path.exists(file_path):
                 missing_files.append(file_name)
 
         if missing_files:
             # If missing files are present, download ALL files and overwrite the old folder.
-            api.dataset_download_files(dataset_owner + "/" + dataset_name, path=os.path.join(download_path, dataset_name), unzip=True, force=True)
-            print("Missing data was downloaded and unzipped. All Datasets are now available.")
+            api.dataset_download_files(dataset_owner + "/" + dataset_name, path=download_path, unzip=True, force=True)# =os.path.join(download_path, dataset_name)
+            st.write("Missing data was downloaded and unzipped. All Datasets are now available.")
         else:
-            print("All Datasets are already available.")
+            st.write("All Datasets are already available.")
 
 @st.cache_data
 def show_download_code_Kaggle():
@@ -216,3 +223,63 @@ def plot_random_row(dataset_folder = "/home/simon/Datascientest_Heartbeat/jan24_
     heartbeat_class = dataset_disease_names.get(target_value, "Unknown")
 
     st.write("Classification of Heartbeat:", heartbeat_class)
+
+
+@st.cache_data
+def predict_with_ML(test, model_file_path="../assets/RFC_Optimized_Model_with_Gridsearch_MITBIH_A_Original.pkl", show_conf_matr=True, cm_title="Confusion Matrix", xtick_labels=None, ytick_labels=None):
+    """
+    Function to be used for the prediction with the simple ML models
+    Assumption: The needed files are already available and correctly named. Otherwise further Arguments need to be introduced.
+    - model_file_path: The path to the .pkl file that is used for predictions
+    - show_conf_matr == True: switch to show confusion matrix or to not show it.
+    - cm_title: Title for the confusion matrix plot
+    - xtick_labels: List of labels for x-axis ticks
+    - ytick_labels: List of labels for y-axis ticks
+    """
+
+    y_test = test[187]
+    X_test = test.drop(187, axis=1)
+
+    model = load_pkl_model(model_file_path)
+    predictions = model.predict(X_test)
+    report = classification_report(y_test, predictions, digits=4, output_dict=True)
+    st.dataframe(report)  # showing the classification report as dataframe --> Beautiful.
+
+    if show_conf_matr:
+        #this space is needed, no one knows why...
+        show_conf_matrix(y_test, predictions, cm_title=cm_title, xtick_labels=xtick_labels, ytick_labels=ytick_labels)
+
+
+def show_conf_matrix(y_true, y_pred, cm_title="Confusion Matrix", xtick_labels=None, ytick_labels=None):
+    """
+    Function to show confusion matrix.
+    - y_true: True labels.
+    - y_pred: Predicted labels.
+    - cm_title: Title for the confusion matrix plot.
+    - xtick_labels: List of labels for x-axis ticks (optional).
+    - ytick_labels: List of labels for y-axis ticks (optional).
+    """
+
+    from sklearn.metrics import confusion_matrix
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+
+    # Compute confusion matrix
+    cm = confusion_matrix(y_true, y_pred)
+
+    # Generate xtick labels if not provided
+    if xtick_labels is None:
+        unique_labels = sorted(set(y_true).union(set(y_pred)))
+        xtick_labels = [f"Class {label}" for label in unique_labels]
+                
+    # Generate ytick labels if not provided
+    if ytick_labels is None:
+        ytick_labels = xtick_labels
+    fig, ax = plt.subplots()
+    plt.figure(figsize=(8, 6))
+    sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", xticklabels=xtick_labels, yticklabels=ytick_labels, ax=ax)
+    plt.xlabel("Predicted labels")
+    plt.ylabel("True labels")
+    plt.title(cm_title) #title is not working correctly?
+    st.pyplot(fig)
+    
