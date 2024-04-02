@@ -53,8 +53,9 @@ def train_model(model_choisi, X_train, y_train, X_test, y_test) :
 
 @st.cache_data
 def load_pkl_model(model_path_pkl):
-    pkl_file = open(model_path_pkl)
-    model = pickle.load(model_path_pkl)
+    pkl_file = open(model_path_pkl, 'rb')
+    model = pickle.load(pkl_file)
+    pkl_file.close()
     return model
 
 @st.cache_data

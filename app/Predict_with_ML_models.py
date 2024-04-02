@@ -18,7 +18,7 @@ def predict_with_ML():
     data_path = "C:/Users/dgnhk/dst_project/heartbeat_data"
     #data_path = "/home/simon/Datascientest_Heartbeat/jan24_bds_int_heartbeat/data/KAGGLE_datasets/heartbeat"
      #RF Classifier model pickle filepath
-    rfc_path = "../assets/RFC_Optimized_Model_with_Gridsearch_MITBIH_A_Original.pkl"
+    rfc_path = "C:/Users/dgnhk/demo_streamlit_jan22cds_en/assets/RFC_Optimized_Model_with_Gridsearch_MITBIH_A_Original.pkl"
 
     ### Create Title
     st.title("Predicting with ML")
