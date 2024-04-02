@@ -4,7 +4,7 @@ import streamlit as st
 # Custom modules
 from Introduction_page import Introduction # Introduction page function
 from Data_viz_preprocessing import Data_viz_preprocessing # Basic ML web app with stremlit
-from Predict_with_ML_models import predict_with_ML
+from Predict_with_ML_models import Page_ML_Stage_1
 
 def main():
 
@@ -21,7 +21,7 @@ def main():
         Data_viz_preprocessing()
     elif menu == liste_menu[2]:
         st.title(" Modeling Stage 1 (ML Models)")
-        predict_with_ML()
+        Page_ML_Stage_1()
     elif menu == liste_menu[3]:
         st.title("Here will be some model selection for Modeling Stage 2 (DL Models)")
         st.header("therefore a new submodule with specific functions has to be created.")

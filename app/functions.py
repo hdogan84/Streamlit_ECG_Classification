@@ -61,8 +61,8 @@ def train_model(model_choisi, X_train, y_train, X_test, y_test) :
 
 @st.cache_data
 def load_pkl_model(model_path_pkl):
-    pkl_file = open(model_path_pkl)
-    model = pickle.load(model_path_pkl)
+    with open(model_path_pkl, "rb") as pickle_file:
+        model = pickle.load(pickle_file)
     return model
 
 @st.cache_data
@@ -223,3 +223,63 @@ def plot_random_row(dataset_folder = "/home/simon/Datascientest_Heartbeat/jan24_
     heartbeat_class = dataset_disease_names.get(target_value, "Unknown")
 
     st.write("Classification of Heartbeat:", heartbeat_class)
+
+
+@st.cache_data
+def predict_with_ML(test, model_file_path="../assets/RFC_Optimized_Model_with_Gridsearch_MITBIH_A_Original.pkl", show_conf_matr=True, cm_title="Confusion Matrix", xtick_labels=None, ytick_labels=None):
+    """
+    Function to be used for the prediction with the simple ML models
+    Assumption: The needed files are already available and correctly named. Otherwise further Arguments need to be introduced.
+    - model_file_path: The path to the .pkl file that is used for predictions
+    - show_conf_matr == True: switch to show confusion matrix or to not show it.
+    - cm_title: Title for the confusion matrix plot
+    - xtick_labels: List of labels for x-axis ticks
+    - ytick_labels: List of labels for y-axis ticks
+    """
+
+    y_test = test[187]
+    X_test = test.drop(187, axis=1)
+
+    model = load_pkl_model(model_file_path)
+    predictions = model.predict(X_test)
+    report = classification_report(y_test, predictions, digits=4, output_dict=True)
+    st.dataframe(report)  # showing the classification report as dataframe --> Beautiful.
+
+    if show_conf_matr:
+        #this space is needed, no one knows why...
+        show_conf_matrix(y_test, predictions, cm_title=cm_title, xtick_labels=xtick_labels, ytick_labels=ytick_labels)
+
+
+def show_conf_matrix(y_true, y_pred, cm_title="Confusion Matrix", xtick_labels=None, ytick_labels=None):
+    """
+    Function to show confusion matrix.
+    - y_true: True labels.
+    - y_pred: Predicted labels.
+    - cm_title: Title for the confusion matrix plot.
+    - xtick_labels: List of labels for x-axis ticks (optional).
+    - ytick_labels: List of labels for y-axis ticks (optional).
+    """
+
+    from sklearn.metrics import confusion_matrix
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+
+    # Compute confusion matrix
+    cm = confusion_matrix(y_true, y_pred)
+
+    # Generate xtick labels if not provided
+    if xtick_labels is None:
+        unique_labels = sorted(set(y_true).union(set(y_pred)))
+        xtick_labels = [f"Class {label}" for label in unique_labels]
+                
+    # Generate ytick labels if not provided
+    if ytick_labels is None:
+        ytick_labels = xtick_labels
+    fig, ax = plt.subplots()
+    plt.figure(figsize=(8, 6))
+    sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", xticklabels=xtick_labels, yticklabels=ytick_labels, ax=ax)
+    plt.xlabel("Predicted labels")
+    plt.ylabel("True labels")
+    plt.title(cm_title) #title is not working correctly?
+    st.pyplot(fig)
+    
