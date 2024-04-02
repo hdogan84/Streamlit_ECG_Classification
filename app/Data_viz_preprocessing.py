@@ -14,7 +14,8 @@ from functions import calculate_average_values #just for debugging, remove later
 
 def Data_viz_preprocessing():
     
-    data_path = "C:/Users/dgnhk/dst_project/heartbeat_data"
+    data_path = "../data/heartbeat" #using a relative path, if the path is not found, the data can be locally downlaoded and lands in a .gitignored folder.
+    #data_path = "C:/Users/dgnhk/dst_project/heartbeat_data"
     #data_path = "/home/simon/Datascientest_Heartbeat/jan24_bds_int_heartbeat/data/KAGGLE_datasets/heartbeat"
 
     ### Create Title
@@ -26,6 +27,10 @@ def Data_viz_preprocessing():
     # Code collapsible section
     show_download_code_Kaggle() #calls the function to show the downloaded code since this takes large volume of code...
     st.write("All Datasets are stored in a local folder, since they are too big to be pushed onto github (>100 mb).")
+    if st.button("Push this button to download the kaggle datasets in a .gitignored folder on your computer to continue"):
+         download_datasets(data_path)
+
+
     mitbih_test, mitbih_train, ptbdb_abnormal, ptbdb_normal = load_datasets_in_workingspace(data_path)
     
     ### Showing code

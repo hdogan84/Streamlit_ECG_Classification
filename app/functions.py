@@ -77,24 +77,24 @@ def download_datasets(download_path, dataset_owner="shayanfazeli", dataset_name=
     api.authenticate()
 
     # Check if the dataset folder already exists
-    if not os.path.exists(dataset_folder):
+    if not os.path.exists(download_path):
         # Dataset folder does not exist --> Download and save the datasets
-        api.dataset_download_files(dataset_owner + "/" + dataset_name, path=os.path.join(download_path, dataset_name), unzip=True)
-        print("Datasets are downloaded and unzipped.")
+        api.dataset_download_files(dataset_owner + "/" + dataset_name, path=download_path, unzip=True) #=os.path.join(download_path, dataset_name)
+        st.write("Datasets are downloaded and unzipped.")
     else:
         # Dataset folder exists, but datasets might be missing
         missing_files = [] 
         for file_name in ["mitbih_test.csv", "mitbih_train.csv", "ptbdb_abnormal.csv", "ptbdb_normal.csv"]:  
-            file_path = os.path.join(dataset_folder, file_name)
+            file_path = os.path.join(download_path, file_name)
             if not os.path.exists(file_path):
                 missing_files.append(file_name)
 
         if missing_files:
             # If missing files are present, download ALL files and overwrite the old folder.
-            api.dataset_download_files(dataset_owner + "/" + dataset_name, path=os.path.join(download_path, dataset_name), unzip=True, force=True)
-            print("Missing data was downloaded and unzipped. All Datasets are now available.")
+            api.dataset_download_files(dataset_owner + "/" + dataset_name, path=download_path, unzip=True, force=True)# =os.path.join(download_path, dataset_name)
+            st.write("Missing data was downloaded and unzipped. All Datasets are now available.")
         else:
-            print("All Datasets are already available.")
+            st.write("All Datasets are already available.")
 
 @st.cache_data
 def show_download_code_Kaggle():
