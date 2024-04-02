@@ -15,9 +15,7 @@ from functions import calculate_average_values #just for debugging, remove later
 def Data_viz_preprocessing():
     
     data_path = "../data/heartbeat" #using a relative path, if the path is not found, the data can be locally downlaoded and lands in a .gitignored folder.
-    #data_path = "C:/Users/dgnhk/dst_project/heartbeat_data"
-    #data_path = "/home/simon/Datascientest_Heartbeat/jan24_bds_int_heartbeat/data/KAGGLE_datasets/heartbeat"
-
+    
     ### Create Title
     st.title("Datavizualization and Preprocessing")
     st.write("As shown in the Introduction page the raw data from Kaggle was already preprocessed and segmented well enough to start directly with data exploration. No extensive preprocessing steps had to be performed.")
@@ -61,7 +59,14 @@ def Data_viz_preprocessing():
     # Plot the image
     st.image(img2)
 
-         
+
+    st.header(":red[Notes for further Improvement:]")
+    st.write("- Usage of only Mitbih train and test as plots is not that useful. Use Mitbih test and ptbdb concateted")
+    st.write("- Include function and show function code to generate test and train dataset from ptbdb. Also show over- and undersampling techniques and create datasets that are stored as variables for the app.")
+    st.write("- Keep random plotting and maybe add selection switches")
+    st.write("- Show a correlation matrix for selected datasets --> Can be copied from Notebook 1 essentially and modifided with selection switches")
+    st.write("- Plot the outlier detection as function: Use sliders to configure how sensitive the outliers should be detected and show the result as hearbeat avg plot (difference between original values and with outliers removed)")
+    st.write("- Basic statistics with pie plots and heartbeat shapes --> These can be shown generally and all functions (with sliders) above dynamically adjust these basic statistics plots?")
     """
     This function is not used in the final presentation, but could serve as an example on how to select our datasets.
     #debugging the calculate averages function --> Can be used for further functions with selections of one dataset.

@@ -38,3 +38,6 @@ def Introduction():
     st.write("Explore the full original research paper at: [IEEE Xplore](https://ieeexplore.ieee.org/document/8419425)")
     st.write("Explore the original dataset at: [Kaggle](https://www.kaggle.com/datasets/shayanfazeli/heartbeat)")
 
+    st.header(":red[Notes for further Improvement]")
+    st.write("Use higher quality pictures or generate the pictures from data. Also include classwise distribution plot for PTBDB.")
+

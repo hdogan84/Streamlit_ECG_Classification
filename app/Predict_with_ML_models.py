@@ -39,6 +39,13 @@ def Page_ML_Stage_1(data_path = "../data/heartbeat"):
     #we now only call the designated prediction function!
     predict_with_ML(ptbdb_abnormal)
 
-    
+    st.header(":red[Notes for further Improvement:]")
+    st.write("Make a selection routine instead of predefined tables:")
+    st.write("- Select Dataset")
+    st.write("- select the ML Models that should be compared together")
+    st.write("- Select the comparison Method:")
+    st.write("- - Single Row: Use a single row (random) to predict --> Compare the real class with the predicted classes of the selected models.")
+    st.write("- - Complete Dataset: Print classification reports, confusion matrix, bar plots with metrics for each model selected or find a way to show all results in one single plot (like results plot in the report)")
+    st.write("- Print / plot the results")
 
          

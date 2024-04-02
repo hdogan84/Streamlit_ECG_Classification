@@ -25,6 +25,14 @@ def main():
     elif menu == liste_menu[3]:
         st.title("Here will be some model selection for Modeling Stage 2 (DL Models)")
         st.header("therefore a new submodule with specific functions has to be created.")
+        st.header(":red[Notes for further Improvement:]")
+        st.write("Make a selection routine instead of predefined tables:")
+        st.write("- Select Dataset")
+        st.write("- select the ML Models that should be compared together")
+        st.write("- Select the comparison Method:")
+        st.write("- - Single Row: Use a single row (random) to predict --> Compare the real class with the predicted classes of the selected models.")
+        st.write("- - Complete Dataset: Print classification reports, confusion matrix, bar plots with metrics for each model selected or find a way to show all results in one single plot (like results plot in the report)")
+        st.write("- Print / plot the results")
     elif menu == liste_menu[4]:
         st.title("Here could be a submodule that allows some comparisons between the models and creates vizualizations on the go (purely optional, since we have absolutely no code for this yet!)")
         st.header("therefore a new submodule with specific functions has to be created.")
