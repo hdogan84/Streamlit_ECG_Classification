@@ -15,7 +15,12 @@ import os
 import pickle
 from kaggle.api.kaggle_api_extended import KaggleApi
 
+"""
+Important Notes:
+- the filepaths have to be relative, i.e. like this "../assets/[file in the assets folder]". In order to use this correctly, the command "streamlit runn app.py" has to be used
+--> Therefore one has to navigate directly into the folder where the app.py folder is located! --> This is good to remember for now, but especially good to remember when trying to deploy our app?
 
+"""
 
 def displayPDF(file, width=1000, height=700, caption=None):
     """
