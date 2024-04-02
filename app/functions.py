@@ -10,7 +10,9 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import accuracy_score, classification_report
 import os
+import pickle
 from kaggle.api.kaggle_api_extended import KaggleApi
 
 
@@ -48,6 +50,12 @@ def train_model(model_choisi, X_train, y_train, X_test, y_test) :
     model.fit(X_train, y_train)
     score = model.score(X_test, y_test)
     return score
+
+@st.cache_data
+def load_pkl_model(model_path_pkl):
+    pkl_file = open(model_path_pkl)
+    model = pickle.load(model_path_pkl)
+    return model
 
 @st.cache_data
 def download_datasets(download_path, dataset_owner="shayanfazeli", dataset_name="heartbeat"):
