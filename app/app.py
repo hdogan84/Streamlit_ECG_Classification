@@ -1,6 +1,7 @@
 # Core Pkg
 import streamlit as st
 
+
 # Custom modules
 from Introduction_page import Introduction # Introduction page function
 from Data_viz_preprocessing import Data_viz_preprocessing # Basic ML web app with stremlit
