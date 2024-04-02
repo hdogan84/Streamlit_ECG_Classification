@@ -26,6 +26,7 @@ def main():
         Page_ML_Stage_1()
     elif menu == liste_menu[3]:
         st.title("Here will be some model selection for Modeling Stage 2 (DL Models)")
+        predict_with_DL()
         st.header("therefore a new submodule with specific functions has to be created.")
         #st.header(":red[Notes for further Improvement:]")
         #st.write("Make a selection routine instead of predefined tables:")
