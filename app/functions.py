@@ -240,7 +240,12 @@ def predict_with_ML(test, model_file_path="../assets/RFC_Optimized_Model_with_Gr
     y_test = test[187]
     X_test = test.drop(187, axis=1)
 
-    model = load_pkl_model(model_file_path)
+    #model = load_pkl_model(model_file_path)
+
+    with open(model_file_path, "rb") as pickle_file:
+        model = pickle.load(pickle_file)
+    
+
     predictions = model.predict(X_test)
     report = classification_report(y_test, predictions, digits=4, output_dict=True)
     st.dataframe(report)  # showing the classification report as dataframe --> Beautiful.

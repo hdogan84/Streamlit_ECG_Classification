@@ -19,7 +19,7 @@ def predict_with_DL():
     data_path = "C:/Users/dgnhk/dst_project/heartbeat_data"
     #data_path = "/home/simon/Datascientest_Heartbeat/jan24_bds_int_heartbeat/data/KAGGLE_datasets/heartbeat"
     #RF Classifier model pickle filepath
-    model_path = "C:/Users/dgnhk/demo_streamlit_jan22cds_en/assets/experiment_4_MITBIH_A_Original.weights.h5"
+    model_path = "../assets/experiment_4_MITBIH_A_Original.weights.h5"
 
     ### Create Title
     st.title("Predicting with DL")
@@ -31,9 +31,14 @@ def predict_with_DL():
     #Checkbox for the button
     st.subheader("MITBIH predictions")
     model = build_model_adv_cnn(model_path)
-    predictions = model.predict(X_test)
+    print(model.summary())
+
+    #model.load_weights("../assets/experiment_4_MITBIH_A_Original.weights.h5")
+
+    predictions = model.predict(X_test).argmax(axis=1)
+    print(predictions.shape)
     report = classification_report(y_test, predictions, digits=4)
-    st.text(report)
+    st.dataframe(report)
 
     from PIL import Image
     st.write("Confusion Matrix as a picture could be good here")
@@ -57,13 +62,15 @@ def build_model_adv_cnn(model_filepath):
     adv_cnn_model.add(tf.keras.layers.Dense(60, activation=tf.keras.layers.LeakyReLU(alpha=0.001)))
     adv_cnn_model.add(tf.keras.layers.Dense(20, activation=tf.keras.layers.LeakyReLU(alpha=0.001)))
     adv_cnn_model.add(tf.keras.layers.Dense(5, activation='softmax'))
+
+    #print(adv_cnn_model.summary())
     
-    adv_cnn_model.load_weights("../assets/experiment_4_MITBIH_A_Original.weights.h5")
+    #adv_cnn_model.load_weights("../assets/experiment_4_MITBIH_A_Original.weights.h5")
     #adv_cnn_model.load_weights("/kaggle/input/ecg-cnn-bestmodels/experiment_4_MITBIH_A_Original.weights.h5")
 
     return adv_cnn_model
 
-    
+
 
     
 
