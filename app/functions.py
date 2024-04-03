@@ -398,5 +398,4 @@ def build_model_simple_ann(model_path,num_classes=5):
 
 
 
-
     
