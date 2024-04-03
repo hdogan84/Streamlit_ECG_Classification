@@ -139,7 +139,7 @@ def show_download_code_Kaggle():
             )
 
 @st.cache_data #The path_to_datasets might be specified in a dynamic .env file?
-def load_datasets_in_workingspace(path_to_datasets="/home/simon/Datascientest_Heartbeat/jan24_bds_int_heartbeat/data/KAGGLE_datasets/heartbeat"):
+def load_datasets_in_workingspace(path_to_datasets="../data/heartbeat"):
     #reading in the datasets from the local ../data folder --> this folder is not pushed on github and only locally available.
     mitbih_test = pd.read_csv(path_to_datasets + "/" + "mitbih_test.csv",header=None)
     mitbih_train = pd.read_csv(path_to_datasets + "/" + "mitbih_train.csv",header=None)
@@ -312,13 +312,13 @@ def predict_with_DL(test, model="advanced_cnn",  model_path = "/home/simon/demo_
         model = build_model_adv_cnn(model_path)
         predictions = model.predict(X_test).argmax(axis=1)
         report = classification_report(y_test, predictions, digits=4, output_dict=True)
-        st.dataframe(report)
+        #st.dataframe(report) #this can be muted if the report is returned from the function
     else:
         st.write("Debugg Message: Model selection in the code was not successful!")
     if show_conf_matr:
         #this space is needed, no one knows why...
         show_conf_matrix(y_test, predictions, cm_title=cm_title, xtick_labels=xtick_labels, ytick_labels=ytick_labels)
-
+    return predictions, report
 # build advanced CNN model and load weights from h5 file (Deep learning)
 @st.cache_data
 def build_model_adv_cnn(model_path):
