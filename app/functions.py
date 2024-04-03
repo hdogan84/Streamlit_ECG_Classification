@@ -14,6 +14,9 @@ from sklearn.metrics import accuracy_score, classification_report
 import os
 import pickle
 from kaggle.api.kaggle_api_extended import KaggleApi
+import tensorflow as tf #Version 2.13.0 is required since this was used by Kaggle to produce the .weights.h5 files
+#PUT THIS INTO REQUIREMENTS.TXT --> Tensorflow MUST be 2.13.0!!! We don´t really need to import tensorflow, but it must be installed as version 2.13.0
+
 
 st.set_option('deprecation.showPyplotGlobalUse', False) #removing errors from beeing shown.
 #known futurewarnings: st.pyplot() should not be called without arguments (e.g. "fig").
@@ -230,6 +233,7 @@ def predict_with_ML(test, model_file_path="../assets/RFC_Optimized_Model_with_Gr
     """
     Function to be used for the prediction with the simple ML models
     Assumption: The needed files are already available and correctly named. Otherwise further Arguments need to be introduced.
+    - test: The dataset (test) that is used for the predictions.
     - model_file_path: The path to the .pkl file that is used for predictions
     - show_conf_matr == True: switch to show confusion matrix or to not show it.
     - cm_title: Title for the confusion matrix plot
@@ -287,4 +291,55 @@ def show_conf_matrix(y_true, y_pred, cm_title="Confusion Matrix", xtick_labels=N
     plt.ylabel("True labels")
     plt.title(cm_title) #title is not working correctly?
     st.pyplot(fig)
+
+@st.cache_data
+def predict_with_DL(test, model="advanced_cnn",  model_path = "/home/simon/demo_streamlit_jan22cds_en/assets/experiment_4_MITBIH_A_Original.weights.h5", show_conf_matr=True, cm_title="Confusion Matrix", xtick_labels=None, ytick_labels=None):
+    """
+    Function to be used for the prediction with the DL models
+    Assumption: The needed files are already available and correctly named. Otherwise further Arguments need to be introduced.
+    - test: The dataset (test) that is used for the predictions.
+    - model_path: The path to the .h5 file that is used for predictions
+    - show_conf_matr == True: switch to show confusion matrix or to not show it.
+    - cm_title: Title for the confusion matrix plot
+    - xtick_labels: List of labels for x-axis ticks
+    - ytick_labels: List of labels for y-axis ticks
+    """
+    y_test = test[187]
+    X_test = test.drop(187,axis=1)
+    
+    #checking which model was selected (simple_ann, simple_cnn or advanced_cnn)
+    if model == "advanced_cnn":
+        model = build_model_adv_cnn(model_path)
+        predictions = model.predict(X_test).argmax(axis=1)
+        report = classification_report(y_test, predictions, digits=4, output_dict=True)
+        st.dataframe(report)
+    else:
+        st.write("Debugg Message: Model selection in the code was not successful!")
+    if show_conf_matr:
+        #this space is needed, no one knows why...
+        show_conf_matrix(y_test, predictions, cm_title=cm_title, xtick_labels=xtick_labels, ytick_labels=ytick_labels)
+
+# build advanced CNN model and load weights from h5 file (Deep learning)
+@st.cache_data
+def build_model_adv_cnn(model_path):
+
+    class Config_Advanced_CNN:
+        Conv1_filter_num = 32
+        Conv1_filter_size = 3
+        
+
+    adv_cnn_model = tf.keras.models.Sequential()
+    adv_cnn_model.add(tf.keras.layers.Conv1D(Config_Advanced_CNN.Conv1_filter_num, Config_Advanced_CNN.Conv1_filter_size, activation='relu', input_shape=(187, 1))) # We add one Conv1D layer to the model
+    adv_cnn_model.add(tf.keras.layers.MaxPooling1D(pool_size=3, strides=2)) # We add one Conv1D layer to the model
+    adv_cnn_model.add(tf.keras.layers.Conv1D(Config_Advanced_CNN.Conv1_filter_num//2, Config_Advanced_CNN.Conv1_filter_size, activation='relu' )) # We add one Conv1D layer to the model
+    adv_cnn_model.add(tf.keras.layers.MaxPooling1D(pool_size=3, strides=2)) # We add one Conv1D layer to the model
+    adv_cnn_model.add(tf.keras.layers.Flatten()) # After  
+    adv_cnn_model.add(tf.keras.layers.Dropout(rate=0.2))
+    adv_cnn_model.add(tf.keras.layers.Dense(120, activation=tf.keras.layers.LeakyReLU(alpha=0.001)))
+    adv_cnn_model.add(tf.keras.layers.Dense(60, activation=tf.keras.layers.LeakyReLU(alpha=0.001)))
+    adv_cnn_model.add(tf.keras.layers.Dense(20, activation=tf.keras.layers.LeakyReLU(alpha=0.001)))
+    adv_cnn_model.add(tf.keras.layers.Dense(5, activation='softmax'))
+    
+    adv_cnn_model.load_weights(model_path)
+    return adv_cnn_model
     
