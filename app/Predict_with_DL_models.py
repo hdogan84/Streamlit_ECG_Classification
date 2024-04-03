@@ -9,29 +9,7 @@ import seaborn as sns
 
 
 def Page_DL_Stage_2(data_path = "../data/heartbeat"):
-    #Old version which works...
-    """   ### Create Title
-    st.title("Predicting with DL")
-    mitbih_test, mitbih_train, ptbdb_abnormal, ptbdb_normal = load_datasets_in_workingspace(data_path) #this could be done globally? or as argument?
     
-    #y_test = mitbih_test[187]
-    #X_test = mitbih_test.drop(187,axis=1)
-
-    #Checkbox for the button
-    st.subheader("MITBIH predictions with Advanced CNN on test set")
-    predict_with_DL(mitbih_test, model="advanced_cnn", model_path="../assets/experiment_4_MITBIH_A_Original.weights.h5")
-
-
-    st.header(":red[Notes for further Improvement:]")
-    st.write("Make a selection routine instead of predefined tables:")
-    st.write("- Select Dataset")
-    st.write("- select the ML Models that should be compared together")
-    st.write("- Select the comparison Method:")
-    st.write("- - Single Row: Use a single row (random) to predict --> Compare the real class with the predicted classes of the selected models.")
-    st.write("- - Complete Dataset: Print classification reports, confusion matrix, bar plots with metrics for each model selected or find a way to show all results in one single plot (like results plot in the report)")
-    st.write("- Print / plot the results")"""
-
-    #new version of code which aims to implement the notes for further improvement
     st.title("Predicting with Deep learning (DL) models")
 
     #Here some dynamic overviews are needed! with checkboxes to hide them.
@@ -42,9 +20,9 @@ def Page_DL_Stage_2(data_path = "../data/heartbeat"):
     dataset_names = st.multiselect("Select Datasets (more than one option possible)", ["MITBIH", "PTBDB"])
 
     #choose the sampling method (Only original and B_SMOTE should be available)
-    selected_sampling = st.selectbox("Select the sampling method", ["A_Original", "B_SMOTE"])
+    selected_sampling = st.selectbox("Select the sampling method on which the models were trained", ["A_Original", "B_SMOTE"])
     #choose the models --> Multiselection
-    model_options = ["simple_ann", "simple_cnn", "advanced_cnn"]
+    model_options = ["Simple_ANN", "Simple_CNN", "Advanced_CNN"]
     selected_models = st.multiselect("Select the DL models (more than one option possible)", options=model_options)
 
     #choose the experiment that was used to train the models, also multiselection to make it fun.
@@ -53,7 +31,7 @@ def Page_DL_Stage_2(data_path = "../data/heartbeat"):
     selected_experiments = st.multiselect("Select the experiments the models were trained on (more than one option possible)", options=experiment_options)
 
     #choose the comparison method (only one selection possible)
-    comparison_method = st.radio("Select the comparison method", ["Single Row", "Complete Dataset"])
+    comparison_method = st.radio("Select the comparison method", ["Single Row (Random)", "Complete Dataset"])
 
 
     if len(dataset_names) > 1:
@@ -78,15 +56,17 @@ def Page_DL_Stage_2(data_path = "../data/heartbeat"):
             mitbih_test, mitbih_train, ptbdb_abnormal, ptbdb_normal = load_datasets_in_workingspace()
             if dataset_name == "MITBIH":
                 dataset_to_use = mitbih_test
+                num_classes = 5 #we can simply choose the num_classes here isntead of overcomplicating things?
                 #st.dataframe(dataset_to_use) #for debugging
             else:
                 #here the concatenting and reshuffling is done
                 dataset_to_use = pd.concat([ptbdb_abnormal, ptbdb_normal], ignore_index=True).sample(frac=1, random_state=42)
+                num_classes = 2
                 #st.dataframe(dataset_to_use) #for debugging
                             
             y_true = dataset_to_use[187].values
             
-            if comparison_method == "Single Row":
+            if comparison_method == "Single Row (Random)":
                 row_index = np.random.randint(len(dataset_to_use))
                 single_row = pd.DataFrame(dataset_to_use.iloc[row_index].values.reshape(1, -1)) #has to be dataframe for predict_with_dl function, even if its only single row.
                 true_label = y_true[row_index]
@@ -94,8 +74,8 @@ def Page_DL_Stage_2(data_path = "../data/heartbeat"):
                 for model_name in selected_models:
                     for experiment in selected_experiments:
                         #this is the model path that should be reused in that way!
-                        model_path = f"../assets/DL_Models/{model_name}/experiment_{experiment}_{dataset_name}_{selected_sampling}.weights.h5"  # Beispiel Pfad
-                        prediction, report = predict_with_DL(test=single_row, model=model_name, model_path=model_path, show_conf_matr=False) #conf matrix makes no sense for one prediction
+                        model_path = f"../assets/DL_Models/{model_name}/experiment_{experiment}_{dataset_name}_{selected_sampling}.weights.h5"
+                        prediction, report = predict_with_DL(test=single_row, model=model_name, model_path=model_path, show_conf_matr=False, num_classes=num_classes) #conf matrix makes no sense for one prediction
                         st.write(f"Model: {model_name}, Experiment: {experiment}, True Label: {true_label}, Predicted Label: {prediction}")
                         st.write("Classification report")
                         st.dataframe(report)
@@ -105,8 +85,8 @@ def Page_DL_Stage_2(data_path = "../data/heartbeat"):
                 for model_name in selected_models:
                     for experiment in selected_experiments:
                         #this is the model path that should be reused in that way!
-                        model_path = f"../assets/DL_Models/{model_name}/experiment_{experiment}_{dataset_name}_{selected_sampling}.weights.h5"  # Beispiel Pfad
-                        prediction, report = predict_with_DL(test=dataset_to_use, model=model_name, model_path=model_path, show_conf_matr=False) #conf matrix is done below 
+                        model_path = f"../assets/DL_Models/{model_name}/experiment_{experiment}_{dataset_name}_{selected_sampling}.weights.h5"
+                        prediction, report = predict_with_DL(test=dataset_to_use, model=model_name, model_path=model_path, show_conf_matr=False, num_classes=num_classes) #conf matrix is done below 
                         st.write(f"Model: {model_name}, Experiment: {experiment}") #, True Label: {true_label}, Predicted Label: {prediction}
                         st.write("Classification report")
                         st.dataframe(report)
