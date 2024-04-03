@@ -17,7 +17,7 @@ import inspect
 from kaggle.api.kaggle_api_extended import KaggleApi
 import tensorflow as tf #Version 2.13.0 is required since this was used by Kaggle to produce the .weights.h5 files
 #PUT THIS INTO REQUIREMENTS.TXT --> Tensorflow MUST be 2.13.0!!! We don´t really need to import tensorflow, but it must be installed as version 2.13.0
-import tensorflow.keras as keras 
+#import tensorflow.keras as keras #can be deleted for ubuntu?
 
 st.set_option('deprecation.showPyplotGlobalUse', False) #removing errors from beeing shown.
 #known futurewarnings: st.pyplot() should not be called without arguments (e.g. "fig").
