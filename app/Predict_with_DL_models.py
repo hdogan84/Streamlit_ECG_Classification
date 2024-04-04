@@ -33,7 +33,7 @@ def Page_DL_Stage_2(data_path = "../data/heartbeat"):
     #choose the comparison method (only one selection possible)
     comparison_method = st.radio("Select the comparison method", ["Single Row (Random)", "Complete Dataset"])
 
-
+    all_results = {} #empty dictionary, that is used in either of the two branches below
     if len(dataset_names) > 1:
         st.warning("Comparing between datasets is selected.")
         st.info("Please note that direct comparison metrics may not be meaningful across different datasets.")
@@ -42,13 +42,14 @@ def Page_DL_Stage_2(data_path = "../data/heartbeat"):
             mitbih_test, mitbih_train, ptbdb_abnormal, ptbdb_normal = load_datasets_in_workingspace()
             if dataset_name == "MITBIH":
                 dataset_to_use = mitbih_test
-                st.dataframe(dataset_to_use) #for debugging
+                num_classes = 5
             else:
                 #here the concatenting and reshuffling is done
                 dataset_to_use = pd.concat([ptbdb_abnormal, ptbdb_normal], ignore_index=True).sample(frac=1, random_state=42)
-                st.dataframe(dataset_to_use) #for debugging
-            # Code hier einfügen, kann von weiter unten kopiert werden und geringfügig angepasst werden.
-            # Dann am Ende eine Funktion aus dem ganzen Mist hier schreiben und weg damit?
+                num_classes = 2
+            results = generate_results(dataset_name, dataset_to_use, selected_models, selected_experiments, comparison_method, selected_sampling, num_classes)
+            # Store results in a dictionary with dataset_name as key
+            all_results[dataset_name] = results
 
     else:
         for dataset_name in dataset_names:
@@ -57,14 +58,15 @@ def Page_DL_Stage_2(data_path = "../data/heartbeat"):
             if dataset_name == "MITBIH":
                 dataset_to_use = mitbih_test
                 num_classes = 5 #we can simply choose the num_classes here isntead of overcomplicating things?
-                #st.dataframe(dataset_to_use) #for debugging
             else:
                 #here the concatenting and reshuffling is done
                 dataset_to_use = pd.concat([ptbdb_abnormal, ptbdb_normal], ignore_index=True).sample(frac=1, random_state=42)
                 num_classes = 2
-                #st.dataframe(dataset_to_use) #for debugging
-                            
-            y_true = dataset_to_use[187].values
+            
+            results = generate_results(dataset_name, dataset_to_use, selected_models, selected_experiments, comparison_method, selected_sampling, num_classes)
+            # Store results in a dictionary with dataset_name as key
+            all_results[dataset_name] = results            
+            """y_true = dataset_to_use[187].values
             
             if comparison_method == "Single Row (Random)":
                 row_index = np.random.randint(len(dataset_to_use))
@@ -103,7 +105,47 @@ def Page_DL_Stage_2(data_path = "../data/heartbeat"):
                     ax.set_title(f"Confusion Matrix for {result_key} and Dataset {dataset_name}_{selected_sampling}")
                     ax.set_xlabel('Predicted Labels')
                     ax.set_ylabel('True Labels')
-                    st.pyplot(fig)
+                    st.pyplot(fig)"""
     
+#If this works, the function should be outsourced in functions.py
+#but first: Make it work entirely and then rename it, so it doesnt get lost in functions.py
+@st.cache_data
+def generate_results(dataset_name, dataset_to_use, selected_models, selected_experiments, comparison_method, selected_sampling, num_classes):
+    results = {}
+    
+    for model_name in selected_models:
+        for experiment in selected_experiments:
+            model_path = f"../assets/DL_Models/{model_name}/experiment_{experiment}_{dataset_name}_{selected_sampling}.weights.h5"
 
-         
+            if comparison_method == "Single Row (Random)":
+                row_index = np.random.randint(len(dataset_to_use))
+                single_row = pd.DataFrame(dataset_to_use.iloc[row_index].values.reshape(1, -1)) #has to be dataframe for predict_with_dl function, even if its only single row.
+                y_true = dataset_to_use.iloc[row_index, 187]
+                prediction, report = predict_with_DL(test=single_row, model=model_name, model_path=model_path, show_conf_matr=False, num_classes=num_classes)
+                st.write(f"Model: {model_name}, Experiment: {experiment}, True Label: {y_true}, Predicted Label: {prediction}")
+                results[f"{model_name}_Exp{experiment}"] = report
+                st.write(f"Classification report for {model_name} and Experiment No. {experiment}")
+                st.dataframe(report)
+
+            elif comparison_method == "Complete Dataset":
+                prediction, report = predict_with_DL(test=dataset_to_use, model=model_name, model_path=model_path, show_conf_matr=False, num_classes=num_classes)
+                y_true = dataset_to_use[187].values
+                results[f"{model_name}_Exp{experiment}"] = report
+                st.write(f"Classification report for {model_name} and Experiment No. {experiment}")
+                st.dataframe(report)
+
+    #the plotting of the confusion matrizes is only done for complete dataset, otherwise it makes no sense. But even here, it doesnt provide too much benefit.
+    if comparison_method == "Complete Dataset":
+         for result_key, result in results.items():
+                    #st.subheader(f"{result_key}")
+                    #st.json(result)
+
+                    # Confusion matrix, not done with dedicated function, but beautiful?
+                    cm = confusion_matrix(y_true, prediction)
+                    fig, ax = plt.subplots()
+                    sns.heatmap(cm, annot=True, fmt="d", ax=ax, cmap="Blues")
+                    ax.set_title(f"Confusion Matrix for {result_key} and Dataset {dataset_name}_{selected_sampling}")
+                    ax.set_xlabel('Predicted Labels')
+                    ax.set_ylabel('True Labels')
+                    st.pyplot(fig)
+    return results

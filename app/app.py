@@ -31,7 +31,7 @@ def main():
                 
     elif menu == liste_menu[4]:
         st.title("Here could be a submodule that allows some comparisons between the models and creates vizualizations on the go (purely optional, since we have absolutely no code for this yet!)")
-        st.header("therefore a new submodule with specific functions has to be created.")
+        st.header(":red[We can erase this page if we don´t have enough time to do it! It is not essential!]")
     elif menu == liste_menu[5]:
         st.title("Here we present our conclusions and outlooks (this can be just a short summary of the final report anyway and emails for job inquiries.))")
         st.header("therefore a new submodule with specific functions has to be created.")
