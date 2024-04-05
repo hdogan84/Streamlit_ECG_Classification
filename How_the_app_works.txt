@@ -1,1 +1,43 @@
 This is kind of an readme to explain mostly to myself and other authors how this app works, since it gets more and more complicated.
+
+
+def run():
+- is called by app.py
+- is the main function and calls all other functions
+- constructs the streamlit page and creates the variables from the input fields (st.multiselect etc)
+    --> But DOES NOT return any arguments
+- Instead of returning arguments, a "Generate Results Button" is used.
+    - The pressing of general results is more or less the call of an implicit second function inside:
+        - "all_results" dictionary is created and is stored as an st.session variable.
+        - creates an loop over all datasets that were selected above:
+            - loads all datasets with "load_datasets_in_workingspace"
+            - selects "dataset_to_use" by the name of the dataset (st.multiselect above)
+            - assigns the number of classes according to the dataset name
+            - calls the function "generate_results" and stores its output in the variables "results" and "single_row_results"
+                --> This can be improved, only one "all_results" dictionary should be necessary if done correctly.
+            - "all_results" is filled with single_row_results for each dataset_name; the st.session_state is also updated with these results; a debugging messager with all_results is shown.
+        
+    - after the display-options were displayed, a second button can be called: "show results":
+        - this button now fetches "all_results" from the session random_state
+        - Then the specific functions for the display Options can be called with all_results as argument 
+            -> they might need rework to handle the bigger dictionary all_results.
+        
+
+def generate_results(dataset_name, dataset_to_use, selected_models, selected_experiments, comparison_method, selected_sampling, num_classes):
+- is called by run() after all arguments are fetched via the input fields
+- makes a dictionary results, which is created in a sliglty different way according to comparison_method
+    --> Currently only single_row works in some way, and no report is displayed? --> The report is made correctly with the function predict_with_dl! and also correclty displayed if called inside generate_results.
+        --> Problem with the display function!
+        -->Debugging the dictionary is necessary, expierments should be possible to distinquish. --> ONLY the last experiment is stored, since they are all on the same level!
+            --> THIS SHOULD BE DONE DIFFERENTLY --> Experiment NO must be somewhere on the left side and not on the same level as the results for this experiment.
+
+        --> Also the sampling method is missing, this should be included for information purposes!
+
+
+
+
+
+
+- General remarks:
+    - if every display_options function calls a subheader with the dataset name, there will be too many subheaders. Therefore a help function should be implemented to create this subheader and then call the
+    specific display options functions according to the selections.
