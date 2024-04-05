@@ -1,0 +1,1 @@
+This is kind of an readme to explain mostly to myself and other authors how this app works, since it gets more and more complicated.
