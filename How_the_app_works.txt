@@ -1,0 +1,49 @@
+This is kind of an readme to explain mostly to myself and other authors how this app works, since it gets more and more complicated.
+
+
+def run():
+- is called by app.py
+- is the main function and calls all other functions
+- constructs the streamlit page and creates the variables from the input fields (st.multiselect etc)
+    --> But DOES NOT return any arguments
+- Instead of returning arguments, a "Generate Results Button" is used.
+    - The pressing of general results is more or less the call of an implicit second function inside:
+        - "all_results" dictionary is created and is stored as an st.session variable.
+        - creates an loop over all datasets that were selected above:
+            - loads all datasets with "load_datasets_in_workingspace"
+            - selects "dataset_to_use" by the name of the dataset (st.multiselect above)
+            - assigns the number of classes according to the dataset name
+            - calls the function "generate_results" and stores its output in the variables "results"
+            - "all_results" is further filled with the results from generate_results according to the dataset_name
+        
+    - after the display-options were displayed, a second button can be called: "show results":
+        - this button now fetches "all_results" from the session random_state
+        - Then the specific functions for the display Options can be called with all_results as argument 
+            -> they might need rework to handle the bigger dictionary all_results.
+        
+
+def generate_results(dataset_name, dataset_to_use, selected_models, selected_experiments, comparison_method, selected_sampling, num_classes):
+- is called by run() after all arguments are fetched via the input fields
+- makes a dictionary results, which is then further split with each for loop that follows.
+- creates a random single row (even if single row is not selected, but only this way there will be no new assignments during one call of the function.)
+- for loop over all models in the selected models:
+    - create new dictionary for each model_name inside the existing results dictionary
+    - for loop over all sampling methods:
+        - create new dictionary for each sampling method select inside the existing model_name dictionary (inside the results dictionary)
+        - for loop over all selected experiments:
+            - create the model path with the experiment and sampling_method specifically
+            - detect if single_row or complete dataset was selected
+            - create y_true and prediction, report with "predict_with_DL"
+            - store all results finally in the last split dictionary distincted by experiment number
+- return the complete results dictionary.
+    
+
+
+def display_classification_report etc:
+- these functions are all the same: They go trough each subdictionary in the results dictionary, until they find what we need. Then a separate function or built in function is called to display the result.
+
+- General remarks:
+    - if every display_options function calls a subheader with the dataset name, there will be too many subheaders. Therefore a help function should be implemented to create this subheader and then call the
+    specific display options functions according to the selections.
+    - The distinction between A_Original and B_SMOTE has yet to be implemented, but there must be no confusion: this is not the test dataset, but rather the train dataset, on which the model was trained.
+    - make display options functions more beautiful and comprehensive in general.

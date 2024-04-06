@@ -333,6 +333,7 @@ def predict_with_DL(test, model="Advanced_CNN",  model_path = "/home/simon/demo_
         #this space is needed, no one knows why...
         show_conf_matrix(y_test, predictions, cm_title=cm_title, xtick_labels=xtick_labels, ytick_labels=ytick_labels)
     return predictions, report
+
 # build advanced CNN model and load weights from h5 file (Deep learning)
 @st.cache_data
 def build_model_adv_cnn(model_path, num_classes=5):
