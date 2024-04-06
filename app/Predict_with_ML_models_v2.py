@@ -125,7 +125,7 @@ def generate_results(dataset_name, dataset_to_use, selected_models, gridsearch_s
     
     for model_name in selected_models:
         
-        model_path = f"../assets/ML_Models/{model_name}_{gridsearch_select}_{dataset_name}_{selected_sampling}.pkl"
+        model_path = f"../data/ML_Models/{model_name}_{gridsearch_select}_{dataset_name}_{selected_sampling}.pkl"
 
         if comparison_method == "Single Row (Random)":
             row_index = np.random.randint(len(dataset_to_use))

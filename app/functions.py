@@ -18,6 +18,7 @@ from kaggle.api.kaggle_api_extended import KaggleApi
 import tensorflow as tf #Version 2.13.0 is required since this was used by Kaggle to produce the .weights.h5 files
 #PUT THIS INTO REQUIREMENTS.TXT --> Tensorflow MUST be 2.13.0!!! We don´t really need to import tensorflow, but it must be installed as version 2.13.0
 #import tensorflow.keras as keras #can be deleted for ubuntu?
+import xgboost
 
 st.set_option('deprecation.showPyplotGlobalUse', False) #removing errors from beeing shown.
 #known futurewarnings: st.pyplot() should not be called without arguments (e.g. "fig").
@@ -253,12 +254,13 @@ def predict_with_ML(test, model_file_path="../assets/RFC_Optimized_Model_with_Gr
 
     predictions = model.predict(X_test)
     report = classification_report(y_test, predictions, digits=4, output_dict=True)
-    st.dataframe(report)  # showing the classification report as dataframe --> Beautiful.
+    #st.dataframe(report)  # showing the classification report as dataframe --> Beautiful.
 
     if show_conf_matr:
         #this space is needed, no one knows why...
         show_conf_matrix(y_test, predictions, cm_title=cm_title, xtick_labels=xtick_labels, ytick_labels=ytick_labels)
 
+    return predictions, report
 
 def show_conf_matrix(y_true, y_pred, cm_title="Confusion Matrix", xtick_labels=None, ytick_labels=None):
     """
