@@ -41,3 +41,4 @@ def generate_results(dataset_name, dataset_to_use, selected_models, selected_exp
 - General remarks:
     - if every display_options function calls a subheader with the dataset name, there will be too many subheaders. Therefore a help function should be implemented to create this subheader and then call the
     specific display options functions according to the selections.
+    - The distinction between A_Original and B_SMOTE has yet to be implemented, but there must be no confusion: this is not the test dataset, but rather the train dataset, on which the model was trained.

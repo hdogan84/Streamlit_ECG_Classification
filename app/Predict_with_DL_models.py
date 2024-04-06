@@ -72,9 +72,10 @@ def generate_results(dataset_name, dataset_to_use, selected_models, selected_exp
     results = {}
     row_index = np.random.randint(len(dataset_to_use)) #only used when comparison_method == "Single Row (Random)", but if not defined here, a new row index will be selected for each model.
     single_row = pd.DataFrame(dataset_to_use.iloc[row_index].values.reshape(1, -1))
-    st.write("Debugging: single_row:", single_row)
+    
 
     for model_name in selected_models:
+        results[model_name] = {} #initializing empty dictionary for each model_name (this is the same strategy as with all_results dictionary!)
         for experiment in selected_experiments:
             model_path = f"../assets/DL_Models/{model_name}/experiment_{experiment}_{dataset_name}_{selected_sampling}.weights.h5"
 
@@ -84,8 +85,7 @@ def generate_results(dataset_name, dataset_to_use, selected_models, selected_exp
                 prediction, report = predict_with_DL(test=single_row, model=model_name, model_path=model_path,
                                                      show_conf_matr=False, num_classes=num_classes)
                 #st.dataframe(report) #for debugging: Is a report available?
-                results[f"{model_name}"] = {
-                    "experiment": experiment, 
+                results[model_name]["Experiment " + experiment] = {
                     "y_true": y_true,
                     "prediction": int(prediction[0]),
                     "report": report
@@ -95,8 +95,7 @@ def generate_results(dataset_name, dataset_to_use, selected_models, selected_exp
                 prediction, report = predict_with_DL(test=dataset_to_use, model=model_name, model_path=model_path,
                                                      show_conf_matr=False, num_classes=num_classes)
                 y_true = dataset_to_use[187].values
-                results[f"{model_name}"] = {
-                    "experiment": experiment,
+                results[model_name]["Experiment " + experiment] = {
                     "y_true": y_true,
                     "prediction": prediction, #this could make trouble, but lets see
                     "report": report
@@ -112,7 +111,7 @@ def display_classification_report(results):
         for model_name, model_result in dataset_results.items():
             st.subheader(f"Model {model_name}")
             for experiment, experiment_result in model_result.items():
-                st.subheader(f"Experiment {experiment}")
+                st.subheader(f"{experiment}") #this is already correctly named due to new dictionary structure.
                 st.write("Classification Report:")
                 if isinstance(experiment_result, dict) and "report" in experiment_result:
                     report = experiment_result["report"]
