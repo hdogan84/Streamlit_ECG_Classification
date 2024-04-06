@@ -70,7 +70,7 @@ def Page_ML_Stage_2(data_path = "../data/heartbeat"):
     
     sampling_options = ["A_Original", "B_SMOTE", "C_RUS"]
     if gridsearch_select == 'Optimized_Model_with_Gridsearch': 
-        gridsearch_options = ["A_Original", "B_SMOTE", "C_RUS"]
+        sampling_options = ["A_Original"]
 
     #choose the sampling method (Only original and B_SMOTE should be available)
     selected_sampling = st.selectbox("Select the sampling method on which the models were trained", sampling_options)
