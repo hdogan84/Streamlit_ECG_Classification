@@ -118,17 +118,29 @@ def display_confusion_matrix(results):
             for sampling_method, sampling_method_result in model_result.items():
                 st.subheader(f"Sampling Method training Set: {sampling_method}")
                 for experiment, experiment_result in sampling_method_result.items():
-                    st.subheader(f"{experiment}") #this is already correctly named due to new dictionary structure.
+                    st.subheader(f"{experiment}")
                     st.write("Confusion Matrix:")
+                    
                     y_true = experiment_result["y_true"]
                     prediction = experiment_result["prediction"]
-                    cm = confusion_matrix(y_true, prediction)
-                    fig, ax = plt.subplots()
-                    sns.heatmap(cm, annot=True, fmt="d", ax=ax, cmap="Blues")
-                    ax.set_title(f"Confusion Matrix for {model_name} in {experiment} on {dataset_name} ({sampling_method})")
-                    ax.set_xlabel('Predicted Labels')
-                    ax.set_ylabel('True Labels')
-                    st.pyplot(fig)
+                    
+                    # Check if y_true is a single number
+                    if isinstance(y_true, (int, float)):
+                        # Create a color-coded plot for the single prediction
+                        fig, ax = plt.subplots(figsize=(6, 2))
+                        color = 'green' if prediction == y_true else 'red'
+                        ax.text(0.5, 0.5, f'Predicted: {prediction}\nTrue: {y_true}', ha='center', va='center', fontsize=20, color=color)
+                        ax.axis('off')
+                        st.pyplot(fig)
+                    else:
+                        # Generate the confusion matrix plot
+                        cm = confusion_matrix(y_true, prediction)
+                        fig, ax = plt.subplots()
+                        sns.heatmap(cm, annot=True, fmt="d", ax=ax, cmap="Blues")
+                        ax.set_title(f"Confusion Matrix for {model_name} in {experiment} on {dataset_name} ({sampling_method})")
+                        ax.set_xlabel('Predicted Labels')
+                        ax.set_ylabel('True Labels')
+                        st.pyplot(fig)
 
 
 #here the actual function is called (from  app.py)
