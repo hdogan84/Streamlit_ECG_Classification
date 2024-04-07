@@ -75,7 +75,7 @@ def Page_ML_Stage_2(data_path = "../data/heartbeat"):
     #choose the sampling method (Only original and B_SMOTE should be available)
     selected_sampling = st.selectbox("Select the sampling method on which the models were trained", sampling_options)
     #choose the models --> Multiselection
-    model_options = ["Support Vector Machine", "KNearest Neighbor", "Decision Tree", "RandomForest", "XGBoost"]
+    model_options = ["SVM", "KNN", "DTC", "RFC", "XGB"]
     selected_models = st.multiselect("Select the DL models (more than one option possible)", options=model_options)
     selected_experiments = 1100 #Parameter not in use
     
