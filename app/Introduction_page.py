@@ -22,17 +22,25 @@ def Introduction():
     st.header("Dataset Information")
      # open an image
     img = Image.open("../assets/Report1_Table1.png")
-
     # Plot the image
     st.image(img)
+
+    # MITBIH data
     st.subheader("Classwise Distribution for MITBIH")
     mitbih_text = "MITBIH dataset consists of 5 classes \nwhere the label 'n' shows the 'normal' class"
     st.text(mitbih_text)
-
     img2 = Image.open("../assets/Report1_Fig1.png")
     # Plot the image
     st.image(img2)
     
+    # MITBIH data
+    st.subheader("Classwise Distribution for PTBDB")
+    ptb_text = """PTBDB dataset consists of normal and abnormal classes\nWe generate a specific test set using Sci-kit Train-Test Split function"""
+    st.text(ptb_text)
+    img3 = Image.open("../assets/Report1_Fig12_Ptbdb_original.png")
+    # Plot the image
+    st.image(img3)
+
     #More Information
     st.header("For More Information on the projects background:")
     st.write("Explore the full original research paper at: [IEEE Xplore](https://ieeexplore.ieee.org/document/8419425)")

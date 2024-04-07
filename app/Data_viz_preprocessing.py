@@ -17,9 +17,9 @@ def Data_viz_preprocessing():
     data_path = "../data/heartbeat" #using a relative path, if the path is not found, the data can be locally downlaoded and lands in a .gitignored folder.
     
     ### Create Title
-    st.title("Datavizualization and Preprocessing")
+    st.title("Data visualization and Preprocessing")
     st.write("As shown in the Introduction page the raw data from Kaggle was already preprocessed and segmented well enough to start directly with data exploration. No extensive preprocessing steps had to be performed.")
-    st.header("Datavizualization")
+    st.header("Data visualization")
     st.subheader("Downloading the Datasets from Kaggle")
     st.write("We implemented a handy function to directly download the datasets from Kaggle:")
     # Code collapsible section
@@ -46,19 +46,19 @@ def Data_viz_preprocessing():
 #Simon: I am not sure why these pictures should be shown, when the random plot function does the same?
 # Also: do not show only mitbih, but also ptbdb (test and train from mitbih are essentially the same.)
     from PIL import Image
-    st.subheader(":red[Mean Amplitude of Signals in the datasets (Is this necessary?)]")
-    st.write("Mean values of time signals in MITBIH Train set")
-    # open an image
-    img = Image.open("../assets/Report1_Fig4_Mitbih_train.png")
-    # Plot the image
-    st.image(img)
+    #st.subheader(":red[Mean Amplitude of Signals in the datasets (Is this necessary?)]")
 
-    st.write("Mean values of time signals in MITBIH Test set")
-    # open an image
-    img2 = Image.open("../assets/Report1_Fig4_Mitbih_test.png")
+    st.header("Data Resampling")
+
+    st.subheader("MITBIH Dataset")
+    img1 = Image.open("../assets/Report1_Fig11_Mitbih_resampling.png")
+    # Plot the image
+    st.image(img1)
+
+    st.subheader("PTBDB Dataset")
+    img2 = Image.open("../assets/Report1_Fig12_Ptbdb_resampling.png")
     # Plot the image
     st.image(img2)
-
 
     st.header(":red[Notes for further Improvement:]")
     st.write("- Usage of only Mitbih train and test as plots is not that useful. Use Mitbih test and ptbdb concateted")

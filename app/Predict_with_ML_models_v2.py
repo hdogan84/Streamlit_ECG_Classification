@@ -132,10 +132,11 @@ def generate_results(dataset_name, dataset_to_use, selected_models, gridsearch_s
             single_row = pd.DataFrame(dataset_to_use.iloc[row_index].values.reshape(1, -1)) #has to be dataframe for predict_with_dl function, even if its only single row.
             y_true = dataset_to_use.iloc[row_index, 187]
             prediction, report = predict_with_ML(test=single_row, model_file_path=model_path, show_conf_matr=False)
-            st.write(f"Model: {model_name}, Exp, True Label: {y_true}, Predicted Label: {prediction}")
+            st.write(f"Results for row {row_index} in the test set")
+            st.write(f"Model: {model_name}, True Label: {y_true}, Predicted Label: {prediction}")
             results[f"{model_name}"] = report
-            st.write(f"Classification report for {model_name} ")
-            st.dataframe(report)
+            #st.write(f"Classification report for {model_name} ")
+            #st.dataframe(report)
 
         elif comparison_method == "Complete Dataset":
             prediction, report = predict_with_ML(test=dataset_to_use, model_file_path=model_path, show_conf_matr=False)
