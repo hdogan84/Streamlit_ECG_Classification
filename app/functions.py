@@ -10,7 +10,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.metrics import accuracy_score, classification_report
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 import os
 import pickle
 import inspect
@@ -262,6 +262,7 @@ def predict_with_ML(test, model_file_path="../assets/RFC_Optimized_Model_with_Gr
 
     return predictions, report
 
+@st.cache_data
 def show_conf_matrix(y_true, y_pred, cm_title="Confusion Matrix", xtick_labels=None, ytick_labels=None):
     """
     Function to show confusion matrix.
@@ -400,5 +401,90 @@ def build_model_simple_ann(model_path,num_classes=5):
     return ann_model
 
 
-
+##### For now only used for Predict_with_DL_models
+#@st.cache_data #this function must not be cached, otherwise the randomness of the single row is lost?
+def generate_results(dataset_name, dataset_to_use, selected_models, selected_experiments,
+                     comparison_method, selected_sampling, num_classes):
+    results = {}
+    row_index = np.random.randint(len(dataset_to_use)) #only used when comparison_method == "Single Row (Random)", but if not defined here, a new row index will be selected for each model.
+    single_row = pd.DataFrame(dataset_to_use.iloc[row_index].values.reshape(1, -1))
     
+
+    for model_name in selected_models:
+        results[model_name] = {} #initializing empty dictionary for each model_name (this is the same strategy as with all_results dictionary!)
+        for sampling_method in selected_sampling:
+            results[model_name][sampling_method] = {}
+            for experiment in selected_experiments:
+                model_path = f"../assets/DL_Models/{model_name}/experiment_{experiment}_{dataset_name}_{sampling_method}.weights.h5"
+                if comparison_method == "Single Row (Random)":
+                    
+                    y_true = dataset_to_use.iloc[row_index, 187]
+                    prediction, report = predict_with_DL(test=single_row, model=model_name, model_path=model_path,
+                                                        show_conf_matr=False, num_classes=num_classes)
+                    results[model_name][sampling_method]["Experiment " + experiment] = {
+                        "y_true": y_true,
+                        "prediction": int(prediction[0]),
+                        "report": report
+                    }
+
+                elif comparison_method == "Complete Dataset":
+                    prediction, report = predict_with_DL(test=dataset_to_use, model=model_name, model_path=model_path,
+                                                        show_conf_matr=False, num_classes=num_classes)
+                    y_true = dataset_to_use[187].values
+                    results[model_name][sampling_method]["Experiment " + experiment] = {
+                        "y_true": y_true,
+                        "prediction": prediction, #this could make trouble, but lets see
+                        "report": report
+                    }
+    
+    return results
+
+##### For now only used for Predict_with_DL_models
+@st.cache_data
+def display_classification_report(results):
+    for dataset_name, dataset_results in results.items():
+        st.subheader(f"Dataset {dataset_name}")
+        for model_name, model_result in dataset_results.items():
+            st.subheader(f"Model {model_name}")
+            for sampling_method, sampling_method_result in model_result.items():
+                st.subheader(f"Sampling Method training Set: {sampling_method}")
+                for experiment, experiment_result in sampling_method_result.items():
+                    st.subheader(f"{experiment}") #this is already correctly named due to new dictionary structure.
+                    st.write("Classification Report:")
+                    if isinstance(experiment_result, dict) and "report" in experiment_result:
+                        report = experiment_result["report"]
+                        st.dataframe(report)
+
+##### For now only used for Predict_with_DL_models
+@st.cache_data
+def display_confusion_matrix(results):
+    for dataset_name, dataset_results in results.items():
+        st.subheader(f"Dataset {dataset_name}")
+        for model_name, model_result in dataset_results.items():
+            st.subheader(f"Model {model_name}")
+            for sampling_method, sampling_method_result in model_result.items():
+                st.subheader(f"Sampling Method training Set: {sampling_method}")
+                for experiment, experiment_result in sampling_method_result.items():
+                    st.subheader(f"{experiment}")
+                    st.write("Confusion Matrix:")
+                    
+                    y_true = experiment_result["y_true"]
+                    prediction = experiment_result["prediction"]
+                    
+                    # Check if y_true is a single number
+                    if isinstance(y_true, (int, float)):
+                        # Create a color-coded plot for the single prediction
+                        fig, ax = plt.subplots(figsize=(6, 2))
+                        color = 'green' if prediction == y_true else 'red'
+                        ax.text(0.5, 0.5, f'Predicted: {prediction}\nTrue: {y_true}', ha='center', va='center', fontsize=20, color=color)
+                        ax.axis('off')
+                        st.pyplot(fig)
+                    else:
+                        # Generate the confusion matrix plot
+                        cm = confusion_matrix(y_true, prediction)
+                        fig, ax = plt.subplots()
+                        sns.heatmap(cm, annot=True, fmt="d", ax=ax, cmap="Blues")
+                        ax.set_title(f"Confusion Matrix for {model_name} in {experiment} on {dataset_name} ({sampling_method})")
+                        ax.set_xlabel('Predicted Labels')
+                        ax.set_ylabel('True Labels')
+                        st.pyplot(fig)

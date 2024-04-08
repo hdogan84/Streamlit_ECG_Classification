@@ -122,14 +122,14 @@ def Page_ML_Stage_2(data_path = "../data/heartbeat"):
 @st.cache_data
 def generate_results(dataset_name, dataset_to_use, selected_models, gridsearch_select, comparison_method, selected_sampling, num_classes):
     results = {}
+    row_index = np.random.randint(len(dataset_to_use)) #only used when comparison_method == "Single Row (Random)", but if not defined here, a new row index will be selected for each model.
+    single_row = pd.DataFrame(dataset_to_use.iloc[row_index].values.reshape(1, -1))
     
     for model_name in selected_models:
         
         model_path = f"../data/ML_Models/{model_name}_{gridsearch_select}_{dataset_name}_{selected_sampling}.pkl"
 
         if comparison_method == "Single Row (Random)":
-            row_index = np.random.randint(len(dataset_to_use))
-            single_row = pd.DataFrame(dataset_to_use.iloc[row_index].values.reshape(1, -1)) #has to be dataframe for predict_with_dl function, even if its only single row.
             y_true = dataset_to_use.iloc[row_index, 187]
             prediction, report = predict_with_ML(test=single_row, model_file_path=model_path, show_conf_matr=False)
             st.write(f"Results for row {row_index} in the test set")
