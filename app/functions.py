@@ -441,7 +441,7 @@ def generate_results(dataset_name, dataset_to_use, selected_models, selected_exp
 
 ##### For now only used for Predict_with_DL_models
 @st.cache_data
-def display_classification_report(results):
+def  display_classification_report(results):
     for dataset_name, dataset_results in results.items():
         st.subheader(f"Dataset {dataset_name}")
         for model_name, model_result in dataset_results.items():
@@ -488,3 +488,167 @@ def display_confusion_matrix(results):
                         ax.set_xlabel('Predicted Labels')
                         ax.set_ylabel('True Labels')
                         st.pyplot(fig)
+
+#This function is used for DL Models and only for complete dataset --> Could make an carry over attempt to ML Models.
+# for now, these are the weighted averages, but classwise could also be done (via num_classes?)
+#@st.cache_data
+def display_bar_charts(results):
+    data = []  # Eine Liste, um Dictionaries der Daten zu sammeln
+
+    for dataset_name, dataset_results in results.items():
+        for model_name, model_results in dataset_results.items():
+            for sampling_method, sampling_method_results in model_results.items():
+                for experiment, experiment_result in sampling_method_results.items():
+                    accuracy = experiment_result["report"]["accuracy"]
+                    macro_f1 = experiment_result["report"]["weighted avg"]["f1-score"]
+                    precision = experiment_result["report"]["weighted avg"]["precision"]
+                    recall = experiment_result["report"]["weighted avg"]["recall"]
+                    data.append({
+                        'Dataset': dataset_name + "_" + sampling_method,
+                        'Model': model_name,
+                        #'Sampling Method': sampling_method, # this confuses the old function from notebook 1
+                        'Accuracy': accuracy,
+                        'F1': macro_f1, 
+                        'Precision': precision, 
+                        'Recall': recall,
+                    })
+
+    # Erstelle den DataFrame außerhalb der Schleife
+    df_metrics = pd.DataFrame(data)
+
+    # Debugging-Ausgabe
+    st.write("Making of dataframe is finished")
+    st.dataframe(df_metrics)
+    
+    #now call the modified function from notebook 1 to display the line plot... --> Rename function or make bar plot out of it.
+    plot_lineplot(
+    data=pd.melt(df_metrics, id_vars=['Model', 'Dataset'], var_name='Metric', value_name='Value'),
+    x='Model',
+    y='Value',
+    hue='Metric',
+    style='Dataset',
+    markers=True,
+    dashes=False,
+    palette='deep',
+    xlabel='Model',
+    ylabel='Metrics',
+    legend_title='Datasets',
+    legend_loc='lower right',
+    figsize=(12, 8),
+    title="Debugging Plot Lineplot",
+    filename=None) 
+
+    plot_barplot(
+    data=pd.melt(df_metrics, id_vars=['Model', 'Dataset'], var_name='Metric', value_name='Value'),
+    x='Model',
+    y='Value',
+    hue='Metric',
+    #style='Dataset', #not available in plot_barplot()
+    #markers=True, #not available in plot_barplot()
+    #dashes=False, #not available in plot_barplot()
+    palette='deep',
+    xlabel='Model',
+    ylabel='Metrics',
+    legend_title='Datasets',
+    legend_loc='lower right',
+    figsize=(12, 8),
+    title="Debugging Plot Barplot",
+    filename=None) 
+    
+
+# Line plotting function from Notebook 1, reused here...
+#@st.cache_data
+def plot_lineplot(data, x, y, hue, style, markers=True, dashes=False, palette='deep', xlabel=None, ylabel=None, legend_title=None, legend_loc='upper right', figsize=(12, 8), title="", filename=None):
+    """
+    Plot a lineplot with customizable parameters.
+
+    Parameters:
+    - data: DataFrame, the data to plot.
+    - x: str, the column name for the x-axis.
+    - y: str, the column name for the y-axis.
+    - hue: str, the column name for the hue (color).
+    - style: str, the column name for the line style.
+    - markers: bool, whether to show markers on the lines (default is True).
+    - dashes: bool, whether to show dashed lines (default is False).
+    - palette: str or dict, the color palette to use (default is 'deep').
+    - xlabel: str, label for the x-axis (default is None).
+    - ylabel: str, label for the y-axis (default is None).
+    - legend_title: str, title for the legend (default is None).
+    - legend_loc: str, location for the legend (default is 'upper right').
+    - figsize: tuple, the size of the figure (default is (12, 8)).
+    """
+    st.write("We have entered the plot_lineplot function")
+    fig, ax = plt.subplots(figsize=figsize)
+    #plt.figure(figsize=figsize)
+    sns.set_theme(style="darkgrid")
+
+    sns.lineplot(
+        x=x,
+        y=y,
+        hue=hue,
+        style=style,
+        data=data,
+        markers=markers,
+        dashes=dashes,
+        palette=palette,
+        ax=ax
+    )
+
+    if xlabel:
+        ax.set_xlabel(xlabel=xlabel)
+    if ylabel:
+        ax.set_ylabel(ylabel=ylabel)
+    if legend_title: #try this out later
+        plt.legend(title=legend_title, loc=legend_loc)
+    else:
+        plt.legend(loc=legend_loc)
+    ax.set_title(title)
+    #plt.xticks(rotation=90) #try this out later
+    
+    #if filename:
+    #    plt.savefig("../reports/figures/result_plots/" + filename, dpi=300, bbox_inches='tight')
+
+    #plt.show() #this could maybe not work because of st.pyplot()?
+    st.pyplot(fig)
+
+# The lineplot function from Notebook 1 as barplot.
+def plot_barplot(data, x, y, hue, palette='deep', xlabel=None, ylabel=None, legend_title=None, legend_loc='upper right', figsize=(12, 8), title="", filename=None):
+    """
+    Plot a barplot with customizable parameters.
+
+    Parameters:
+    - data: DataFrame, the data to plot.
+    - x: str, the column name for the x-axis.
+    - y: str, the column name for the y-axis.
+    - hue: str, the column name for the hue (color).
+    - palette: str or dict, the color palette to use (default is 'deep').
+    - xlabel: str, label for the x-axis (default is None).
+    - ylabel: str, label for the y-axis (default is None).
+    - legend_title: str, title for the legend (default is None).
+    - legend_loc: str, location for the legend (default is 'upper right').
+    - figsize: tuple, the size of the figure (default is (12, 8)).
+    """
+    st.write("We have entered the plot_barplot function")
+    fig, ax = plt.subplots(figsize=figsize)
+    sns.set_theme(style="darkgrid")
+
+    sns.barplot(
+        x=x,
+        y=y,
+        hue=hue,
+        palette=palette,
+        data=data,
+        ax=ax
+    )
+
+    if xlabel:
+        ax.set_xlabel(xlabel=xlabel)
+    if ylabel:
+        ax.set_ylabel(ylabel=ylabel)
+    if legend_title:
+        plt.legend(title=legend_title, loc=legend_loc)
+    else:
+        plt.legend(loc=legend_loc)
+    ax.set_title(title)
+
+    st.pyplot(fig)

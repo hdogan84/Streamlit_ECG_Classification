@@ -1,5 +1,5 @@
 import streamlit as st
-from functions import load_datasets_in_workingspace, generate_results, display_classification_report, display_confusion_matrix
+from functions import load_datasets_in_workingspace, generate_results, display_classification_report, display_confusion_matrix, display_bar_charts
 #from sklearn.metrics import classification_report, confusion_matrix
 import pandas as pd
 import numpy as np
@@ -22,7 +22,7 @@ def run():
     comparison_method = st.radio("Select the comparison method", ["Single Row (Random)", "Complete Dataset"])
 
     display_options = st.multiselect("Select Display Option(s)",
-                                     ["Classification Report", "Confusion Matrix"],
+                                     ["Classification Report", "Confusion Matrix", "Bar Charts (Debugging)"],
                                      default=[])
 
     if st.button("Generate Results"):
@@ -40,8 +40,8 @@ def run():
             st.session_state['all_results'] = all_results #otherwise everything will be lost...
            
         #debugging how the results dictionary looks like...
-        #st.write("How does the all_results dictionary look like?")
-        #st.write(all_results)
+        st.write("How does the all_results dictionary look like?")
+        st.write(all_results)
         st.info("The results have been generated, continuing with showing the results is possible.")
     if st.button("Show Results"):
         st.header("Results")
@@ -54,6 +54,10 @@ def run():
         if "Confusion Matrix" in display_options:
             st.subheader("Confusion Matrices")
             display_confusion_matrix(all_results)
+
+        if "Bar Charts (Debugging)" in display_options:
+            st.subheader("Bar Charts (Debugging)")
+            display_bar_charts(all_results)
 
 #here the actual function is called (from  app.py)
 def Page_DL_Stage_2():
