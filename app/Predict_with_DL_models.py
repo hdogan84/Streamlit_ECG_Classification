@@ -22,7 +22,7 @@ def run():
     comparison_method = st.radio("Select the comparison method", ["Single Row (Random)", "Complete Dataset"])
 
     display_options = st.multiselect("Select Display Option(s)",
-                                     ["Classification Report", "Confusion Matrix", "Bar Charts (Debugging)"],
+                                     ["Classification Report", "Confusion Matrix", "Line Plot (Metrics)"],
                                      default=[])
 
     if st.button("Generate Results"):
@@ -55,8 +55,8 @@ def run():
             st.subheader("Confusion Matrices")
             display_confusion_matrix(all_results)
 
-        if "Bar Charts (Debugging)" in display_options:
-            st.subheader("Bar Charts (Debugging)")
+        if "Line Plot (Metrics)" in display_options:
+            st.subheader("Line Plot(s) for the different metrics")
             display_bar_charts(all_results)
 
 #here the actual function is called (from  app.py)
