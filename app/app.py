@@ -13,7 +13,7 @@ from Predict_with_DL_models import Page_DL_Stage_2
 def main():
 
     # List of pages
-    liste_menu = ["Introduction to the Problem", "Data Vizualization and Preprocessing", "Modeling Stage 1", "Modeling Stage 2", "Comparisons", "Conclusion and Outlook", "Team Members"]
+    liste_menu = ["Introduction to the Problem", "Data Vizualization and Preprocessing", "Modeling Stage 1", "Modeling Stage 2", "Conclusion and Outlook", "Team Members"] #"Comparisons", 
 
     # Sidebar
     menu = st.sidebar.selectbox("Content Selection", liste_menu)
@@ -29,15 +29,11 @@ def main():
         Page_ML_Stage_2()
     elif menu == liste_menu[3]:
         st.title("Here will be some model selection for Modeling Stage 2 (DL Models)")
-        Page_DL_Stage_2()
-                
+        Page_DL_Stage_2()                
     elif menu == liste_menu[4]:
-        st.title("Here could be a submodule that allows some comparisons between the models and creates vizualizations on the go (purely optional, since we have absolutely no code for this yet!)")
-        st.header(":red[We can erase this page if we don´t have enough time to do it! It is not essential!]")
-    elif menu == liste_menu[5]:
         st.title("Here we present our conclusions and outlooks (this can be just a short summary of the final report anyway and emails for job inquiries.))")
         st.header("therefore a new submodule with specific functions has to be created.")
-    elif menu == liste_menu[6]:
+    elif menu == liste_menu[5]:
         st.title("Here we present the Members of our Team.")
         st.header("therefore a new submodule with specific functions has to be created. It could link to the linked in page etc.")
         st.write("Simon Dommer:")
