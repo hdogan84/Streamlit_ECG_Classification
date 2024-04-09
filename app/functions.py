@@ -587,8 +587,81 @@ def plot_lineplot(data, x, y, hue, style, markers=True, dashes=False, palette='d
     ax.set_title(title)
     plt.xticks(rotation=90) #try this out later
     
-    #if filename:
-    #    plt.savefig("../reports/figures/result_plots/" + filename, dpi=300, bbox_inches='tight')
-
-    #plt.show() #this could maybe not work because of st.pyplot()?
     st.pyplot(fig)
+
+
+#new radar charts plot figure (testing and debugging)
+# for now this function only works withoug class distinction but with the weighted averages
+# but: This function would be very good for class wise comparisons!
+#@st.cache #not useful in this case
+def display_radar_charts(results):
+    data = []  # Eine Liste, um Dictionaries der Daten zu sammeln
+    for dataset_name, dataset_results in results.items():
+        for model_name, model_results in dataset_results.items():
+            for sampling_method, sampling_method_results in model_results.items():
+                for experiment, experiment_result in sampling_method_results.items():
+                    accuracy = experiment_result["report"]["accuracy"]
+                    macro_f1 = experiment_result["report"]["weighted avg"]["f1-score"]
+                    precision = experiment_result["report"]["weighted avg"]["precision"]
+                    recall = experiment_result["report"]["weighted avg"]["recall"]
+                    data.append({
+                        'Dataset': dataset_name + "_" + sampling_method, #otherwise no distinction is possible for now
+                        'Model': model_name + "_" + experiment, #otherwise no distinction is possible for now
+                        #'Sampling Method': sampling_method, # this confuses the old function from notebook 1
+                        'Accuracy': accuracy,
+                        'F1': macro_f1, 
+                        'Precision': precision, 
+                        'Recall': recall,
+                    })
+
+    # Erstelle den DataFrame außerhalb der Schleife
+    df_metrics = pd.DataFrame(data)
+
+    # now call the modified function from notebook 1 to display the line plot... --> Rename function or make bar plot out of it.
+    plot_radar_chart(df_metrics, 'Model', ['Accuracy', 'F1', 'Precision', 'Recall'])
+
+# Radar plotting function
+def plot_radar_chart(data, category_col, metrics):
+    """
+    Plot a radar chart with customizable parameters.
+
+    Parameters:
+    - data: DataFrame, the data to plot.
+    - category_col: str, the column name for the categories.
+    - metrics: list, a list of column names for the metrics to plot on the radar chart.
+    """
+    # Create a list of colors for each metric
+    colors = sns.color_palette('deep', len(metrics))
+
+    # Create a radar chart for each category in the dataset
+    for category in data[category_col].unique():
+        category_data = data[data[category_col] == category]
+        num_metrics = len(metrics)
+        angles = np.linspace(0, 2 * np.pi, num_metrics, endpoint=False).tolist()
+
+        fig, ax = plt.subplots(figsize=(8, 8), subplot_kw=dict(polar=True))
+        ax.set_theta_offset(np.pi / 2)
+        ax.set_theta_direction(-1)
+
+        # Draw one axe per variable and add labels
+        plt.xticks(angles, metrics)
+
+        # Draw ylabels
+        ax.set_rscale('log')
+        ax.set_yticklabels([])
+
+        # Plot each individual radar chart
+        for i, metric in enumerate(metrics):
+            values = category_data[metric].values.tolist()
+            values += values[:1]
+            angles_adjusted = angles + angles[:1]  # Adjust angles to match the length of values
+            ax.plot(angles_adjusted, values, color=colors[i], linewidth=2, linestyle='solid', label=metric)
+            ax.fill(angles_adjusted, values, color=colors[i], alpha=0.4)
+
+        # Add a title
+        ax.set_title(category, size=20, color='black', y=1.1)
+
+        # Add a legend
+        plt.legend(loc='upper right', bbox_to_anchor=(0.1, 0.1))
+
+        st.pyplot(fig)
