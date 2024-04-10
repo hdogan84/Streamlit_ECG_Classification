@@ -14,6 +14,8 @@ from sklearn.metrics import accuracy_score, classification_report, confusion_mat
 import os
 import pickle
 import inspect
+import plotly.graph_objects as go
+import plotly.express as px
 from kaggle.api.kaggle_api_extended import KaggleApi
 import tensorflow as tf #Version 2.13.0 is required since this was used by Kaggle to produce the .weights.h5 files
 #PUT THIS INTO REQUIREMENTS.TXT --> Tensorflow MUST be 2.13.0!!! We don´t really need to import tensorflow, but it must be installed as version 2.13.0
@@ -489,10 +491,8 @@ def display_confusion_matrix(results):
                         ax.set_ylabel('True Labels')
                         st.pyplot(fig)
 
-#This function is used for DL Models and only for complete dataset --> Could make an carry over attempt to ML Models.
-# for now, these are the weighted averages, but classwise could also be done (via num_classes?)
-#@st.cache_data
-def display_bar_charts(results):
+#new display_lineplot function that is using the plotly go object.
+def display_lineplot(results):
     data = []  # Eine Liste, um Dictionaries der Daten zu sammeln
     for dataset_name, dataset_results in results.items():
         for model_name, model_results in dataset_results.items():
@@ -503,13 +503,11 @@ def display_bar_charts(results):
                     precision = experiment_result["report"]["weighted avg"]["precision"]
                     recall = experiment_result["report"]["weighted avg"]["recall"]
                     data.append({
-                        'Dataset': dataset_name + "_" + sampling_method, #otherwise no distinction is possible for now
-                        'Model': model_name + "_" + experiment, #otherwise no distinction is possible for now
-                        #'Sampling Method': sampling_method, # this confuses the old function from notebook 1
+                        'Model': model_name + "_" + experiment,
+                        'Dataset': dataset_name + "_" + sampling_method,
                         'Accuracy / Recall': accuracy,
                         'F1': macro_f1, 
                         'Precision': precision, 
-                        #'Recall': recall, #in weighted averages, accuracy and recall are the same
                     })
 
     # Erstelle den DataFrame außerhalb der Schleife
@@ -519,75 +517,36 @@ def display_bar_charts(results):
     #st.write("Making of dataframe is finished")
     #st.dataframe(df_metrics)
     
-
-    #now call the modified function from notebook 1 to display the line plot... --> Rename function or make bar plot out of it.
-    plot_lineplot(
-    data=pd.melt(df_metrics, id_vars=['Model', 'Dataset'], var_name='Metric', value_name='Value'),
-    x='Model',
-    y='Value',
-    hue='Metric',
-    style='Dataset',
-    markers=True,
-    dashes=False,
-    palette='deep',
-    xlabel='Model',
-    ylabel='Metrics',
-    legend_title='Datasets',
-    legend_loc='lower right',
-    figsize=(12, 8),
-    title=f"Weighted Average Metrics for the DL Models across the selected combinations",
-    filename=None) 
-    
+    #new version of lineplotting with plotly
+    plot_lineplot(df_metrics)
 
 # Line plotting function from Notebook 1, reused here...
-#@st.cache_data
-def plot_lineplot(data, x, y, hue, style, markers=True, dashes=False, palette='deep', xlabel=None, ylabel=None, legend_title=None, legend_loc='upper right', figsize=(12, 8), title="", filename=None):
-    """
-    Plot a lineplot with customizable parameters.
-
-    Parameters:
-    - data: DataFrame, the data to plot.
-    - x: str, the column name for the x-axis.
-    - y: str, the column name for the y-axis.
-    - hue: str, the column name for the hue (color).
-    - style: str, the column name for the line style.
-    - markers: bool, whether to show markers on the lines (default is True).
-    - dashes: bool, whether to show dashed lines (default is False).
-    - palette: str or dict, the color palette to use (default is 'deep').
-    - xlabel: str, label for the x-axis (default is None).
-    - ylabel: str, label for the y-axis (default is None).
-    - legend_title: str, title for the legend (default is None).
-    - legend_loc: str, location for the legend (default is 'upper right').
-    - figsize: tuple, the size of the figure (default is (12, 8)).
-    """
-    fig, ax = plt.subplots(figsize=figsize)
-    #plt.figure(figsize=figsize)
-    sns.set_theme(style="darkgrid")
-
-    sns.lineplot(
-        x=x,
-        y=y,
-        hue=hue,
-        style=style,
-        data=data,
-        markers=markers,
-        dashes=dashes,
-        palette=palette,
-        ax=ax
+def plot_lineplot(df_metrics):
+    # Melt DataFrame
+    melted_df = pd.melt(df_metrics, id_vars=['Model', 'Dataset'], var_name='Metric', value_name='Value')
+    
+    fig = px.line(
+        melted_df,
+        x='Model',
+        y='Value',
+        color='Metric',
+        symbol= "Dataset",
+        line_dash= "Dataset", 
+        #facet_row='Dataset',
+        #facet_col='Metric',  # Änderung hier
+        line_shape='linear',  # Verbindungslinien zwischen den Punkten
+        render_mode='svg',    # Verbessert die Darstellung in Streamlit
+    )
+    
+    fig.update_layout(
+        title="Weighted Average Metrics for the DL Models across the selected combinations",
+        xaxis_title="Model",
+        yaxis_title="Metrics",
+        legend_title="Display Options",
+        legend=dict(orientation="h", yanchor="bottom", y=1.15, xanchor="right", x=1),
     )
 
-    if xlabel:
-        ax.set_xlabel(xlabel=xlabel)
-    if ylabel:
-        ax.set_ylabel(ylabel=ylabel)
-    if legend_title: #try this out later
-        plt.legend(title=legend_title, loc=legend_loc)
-    else:
-        plt.legend(loc=legend_loc)
-    ax.set_title(title)
-    plt.xticks(rotation=90) #try this out later
-    
-    st.pyplot(fig)
+    st.plotly_chart(fig)
 
 
 #new radar charts plot figure (testing and debugging)

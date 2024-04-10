@@ -1,5 +1,5 @@
 import streamlit as st
-from functions import load_datasets_in_workingspace, generate_results, display_classification_report, display_confusion_matrix, display_bar_charts, display_radar_charts
+from functions import load_datasets_in_workingspace, generate_results, display_classification_report, display_confusion_matrix, display_radar_charts, display_lineplot
 #from sklearn.metrics import classification_report, confusion_matrix
 import pandas as pd
 import numpy as np
@@ -58,7 +58,7 @@ def run():
 
         if "Line Plot (Metrics)" in display_options:
             st.subheader("Line Plot(s) for the different metrics")
-            display_bar_charts(all_results)
+            display_lineplot(all_results)
 
         if "Radar Chart (Debugging)" in display_options:
             st.subheader("Radar Chart (Debugging)")
