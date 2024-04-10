@@ -60,6 +60,16 @@ def Data_viz_preprocessing():
     # Plot the image
     st.image(img2)
 
+    st.subheader("Outlier Detection (Mitbih Dataset)")
+    img3 = Image.open("../assets/Report1_Fig7_Mitbih.png")
+    # Plot the image
+    st.image(img3)
+
+    st.subheader("Correlation Matrix for Original data")
+
+    comparison_method = st.radio("Select the Dataset", ["MITBIH", "PTBDB"])
+
+
     st.header(":red[Notes for further Improvement:]")
     st.write("- Usage of only Mitbih train and test as plots is not that useful. Use Mitbih test and ptbdb concateted")
     st.write("- Include function and show function code to generate test and train dataset from ptbdb. Also show over- and undersampling techniques and create datasets that are stored as variables for the app.")
