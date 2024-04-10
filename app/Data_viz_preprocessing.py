@@ -51,7 +51,7 @@ def Data_viz_preprocessing():
     st.header("Data Resampling")
 
     st.subheader("MITBIH Dataset")
-    img1 = Image.open("../assets/Report1_Fig11_Mitbih_resampling.png")
+    img1 = Image.open("../assets/Report1_Fig11_Mitbih_resampling.bmp")
     # Plot the image
     st.image(img1)
 

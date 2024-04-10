@@ -37,7 +37,7 @@ def Introduction():
     st.subheader("Classwise Distribution for PTBDB")
     ptb_text = """PTBDB dataset consists of normal and abnormal classes\nWe generate a specific test set using Sci-kit Train-Test Split function"""
     st.text(ptb_text)
-    img3 = Image.open("../assets/Report1_Fig12_Ptbdb_original.png")
+    img3 = Image.open("../assets/Report1_Fig12_Ptbdb_original.bmp")
     # Plot the image
     st.image(img3)
 
