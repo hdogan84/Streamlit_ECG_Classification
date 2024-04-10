@@ -42,8 +42,7 @@ def run():
     
     #display options should be shown after the results have been generated.
     display_options = st.multiselect("Select Display Option(s)",
-                                     ["Classification Report", "Confusion Matrix", "Line Plot (Metrics)", "Radar Chart (Debugging)"],
-                                     default=[])
+                                     ["Classification Report", "Confusion Matrix", "Line Plot (Metrics)"], default =[]) #, "Radar Chart (Debugging)"
     
     if st.button("Show Results"):
         st.header("Results")
