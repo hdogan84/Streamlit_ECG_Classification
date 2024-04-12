@@ -222,7 +222,7 @@ def plot_random_row(dataset_folder = "/home/simon/Datascientest_Heartbeat/jan24_
     plt.grid(True)
     x_ticks_positions = np.arange(0, 188, 10) #Positions of the x-ticks (we choose an tick for every 10th position)
     x_tick_labels = [i * 8 for i in x_ticks_positions] #each timestep is 8ms long, already multiplied by 10 due to x_ticks_positions..
-    plt.xticks(x_ticks_positions, x_tick_labels) #we can now change the x_ticks accordingly.
+    plt.xticks(x_ticks_positions, x_tick_labels, rotation=90) #we can now change the x_ticks accordingly.
     plt.legend()
     st.pyplot()
 
