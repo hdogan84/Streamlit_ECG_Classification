@@ -141,6 +141,8 @@ def show_download_code_Kaggle():
                 print("All Datasets are already available.")
                 """
             )
+            st.caption("Code 1: Code used to download the Datasets from Kaggle. Authentification might be required.")
+    
 
 @st.cache_data #The path_to_datasets might be specified in a dynamic .env file?
 def load_datasets_in_workingspace(path_to_datasets="../data/heartbeat"):
@@ -228,8 +230,8 @@ def plot_random_row(dataset_folder = "/home/simon/Datascientest_Heartbeat/jan24_
     dataset_disease_names = disease_names_mitbih if selected_dataset == "MITBIH" else disease_names_ptbdb
     target_value = random_row.iloc[-1]
     heartbeat_class = dataset_disease_names.get(target_value, "Unknown")
-
-    st.write("Classification of Heartbeat:", heartbeat_class)
+    st.caption("Fig 5: Random Plot of a heartbeat shape from one of the datasets. Averages of residual classes shown.")
+    st.text(f"Classification of Heartbeat: {heartbeat_class}")
 
 
 @st.cache_data
@@ -624,3 +626,47 @@ def plot_radar_chart(data, category_col, metrics):
         plt.legend(loc='upper right', bbox_to_anchor=(0.1, 0.1))
 
         st.pyplot(fig)
+
+@st.cache_data
+def plot_with_outliers(data, lower_quantile, upper_quantile):
+    """"
+    Plots the outliers data for the visualization page
+    """
+    q1 = data.quantile(lower_quantile)
+    q3 = data.quantile(upper_quantile)
+    iqr = q3 - q1
+    
+    # Daten ohne Ausreißer
+    not_outliers = data[~((data < (q1 - 1.5 * iqr)) | (data > (q3 + 1.5 * iqr)))]
+    
+    # Plot
+    num_classes = data[187].drop_duplicates()
+    color_palette = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
+    for i, class_item in enumerate(num_classes):
+        class_data = data[data[187] == class_item]
+        plt.plot(class_data.mean(axis=0)[:187], color=color_palette[i], linestyle='--',  label=f"Class {class_item} with outliers")
+        plt.plot(not_outliers[not_outliers[187] == class_item].mean(axis=0)[:187], color=color_palette[i], linestyle='-', label=f"Class {class_item} without outliers")
+
+    plt.title("Comparing Mean of Outlier Values")
+    plt.xlabel("Timesteps in ms")
+    plt.ylabel("Normalized ECG Amplitude")
+    plt.grid(True)
+    x_ticks_positions = np.arange(0, 188, 10)
+    x_tick_labels = [i * 8 for i in x_ticks_positions]
+    plt.xticks(x_ticks_positions, x_tick_labels, rotation=90)
+    plt.legend(loc='upper right', fontsize='small')  # Setzen Sie die Position und die Größe der Legende
+    st.pyplot()
+    st.caption("Fig 9: Influence of Outliers on heartbeat shape for variable configurations.")
+
+
+@st.cache_data
+def plot_correlation_matrix(data, selected_dataset):
+    """
+    plots the correlation matrix just like in the report
+    """
+    correlation_matrix = data.corr()
+    plt.figure(figsize=(16, 16));
+    sns.heatmap(correlation_matrix, annot=False, cmap='BrBG', fmt=".2f");
+    plt.title(f'Correlation Heatmap of {selected_dataset}');
+    st.pyplot()
+    st.caption("Fig 10: Correlation Matrix for the selected Dataset.")

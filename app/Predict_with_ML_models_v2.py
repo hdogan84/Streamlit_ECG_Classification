@@ -11,16 +11,14 @@ from sklearn.neighbors import KNeighborsClassifier
 from functions import train_model, download_datasets, show_download_code_Kaggle, load_datasets_in_workingspace, plot_random_row
 from functions import load_pkl_model, predict_with_ML 
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+from PIL import Image
 
 
 
 def Page_ML_Stage_2(data_path = "../data/heartbeat"):
+    mitbih_test, mitbih_train, ptbdb_abnormal, ptbdb_normal = load_datasets_in_workingspace()
     
     st.title("Predicting with Machine learning (ML) models")
-
-    #Here some dynamic overviews are needed! with checkboxes to hide them.
-    # --> Overview on model structures: Call build function and then model.summary?
-    # --> Overview on experiment design: Make a table in functions.py or complete function just for the table and show it? Or use picture at first from the report!
 
     #choose the dataset --> Multiselection, so comparison of different datasets is also possible
     dataset_names = st.multiselect("Select Datasets (more than one option possible)", ["MITBIH", "PTBDB"])
@@ -29,7 +27,7 @@ def Page_ML_Stage_2(data_path = "../data/heartbeat"):
     if "PTBDB" in dataset_names: 
         gridsearch_options = ['Basemodel_no_gridsearch']
 
-    gridsearch_select = st.selectbox("Select Gridsearch On/Off", gridsearch_options)
+    gridsearch_select = st.selectbox("Select Gridsearch On/Off (Gridsearch only available for original (A) MITBIH Dataset)", gridsearch_options)
 
     st.write(gridsearch_select)
     
@@ -47,7 +45,18 @@ def Page_ML_Stage_2(data_path = "../data/heartbeat"):
     #choose the comparison method (only one selection possible)
     comparison_method = st.radio("Select the comparison method", ["Single Row (Random)", "Complete Dataset"])
 
-    mitbih_test, mitbih_train, ptbdb_abnormal, ptbdb_normal = load_datasets_in_workingspace()
+    show_image = False
+
+    if st.button("Show final results without calculation"):
+        show_image = True
+
+    if show_image:
+        img_1 = Image.open("../assets/Gridsearch_Metrics_Evaluation_Simple_Models.png")
+        st.image(img_1, caption="Fig 11: Final results for the ML Models with and without Gridsearch on MITBIH A.")
+        if st.button("Hide the Image again"):
+            show_image = False
+
+    
 
     all_results = {} #empty dictionary, that is used in either of the two branches below
     if len(dataset_names) > 1:

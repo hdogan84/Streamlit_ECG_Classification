@@ -9,9 +9,9 @@ import tensorflow as tf
 
 #@st.cache_data #cannot be properly used here
 def run():
-    st.title("Model Architechtures")
+    st.header("Model Architectures")
 
-    dataset_name = st.selectbox("Select Dataset", ["MITBIH", "PTBDB"])
+    dataset_name = st.selectbox("Select Dataset on which the model was trained", ["MITBIH", "PTBDB"])
     
     model_options = ["Simple_ANN", "Simple_CNN", "Advanced_CNN"]
     selected_model = st.radio("Select the DL model", options=model_options)
@@ -34,7 +34,27 @@ def run():
     model.summary(print_fn=lambda x: stringlist.append(x))
     model_summary = "\n".join(stringlist)
     st.text(model_summary)
-    
+
+    st.header("Experiment Design")
+    st.write("We hereby present shortly an overview on the experiment design for all DL Models.")
+    data = {
+    'Experiment Design': [f'Experiment {i}' for i in range(1, 5)],
+    'Model Type': ['All Models'] * 4,
+    'Epochs': [70, 70, 70, 70],
+    'batch_size': [10, 10, 10, 10],
+    'patience': [10, 10, 70, 70],
+    'Initial_Learning_Rate': [0.001, 0.0001, 0.0001, 0.001],
+    'lr_reduction_rate': ['N/A', 'N/A', 'N/A', '0.5 @10 Epochs'],
+    'Additional_Info': ['', '', 'Early Stop Callback is essentially deactivated.', 'Early Stop Callback is essentially deactivated. Learning rate is halved each 10 epochs, initial lr is used.']
+    }
+    df = pd.DataFrame(data)
+    #st.table(df) #works, but not pretty
+    st.write(
+    df.style
+    .set_properties(**{'text-align': 'left'})
+    .set_table_styles([{'selector': 'th', 'props': [('text-align', 'left')]}])
+    .set_caption("Experiment Details")
+    )
     
             
         
@@ -95,7 +115,7 @@ def build_simple_cnn(num_classes=5):
     return cnn_model
 
 @st.cache_data
-def build_simple_ann(model_path,num_classes=5):
+def build_simple_ann(num_classes=5):
     """
     builds the simple ANN model from the reports
     """

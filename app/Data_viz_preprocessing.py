@@ -8,7 +8,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
-from functions import train_model, download_datasets, show_download_code_Kaggle, load_datasets_in_workingspace, plot_random_row
+from functions import train_model, download_datasets, show_download_code_Kaggle, load_datasets_in_workingspace, plot_random_row, plot_with_outliers, plot_correlation_matrix
 from functions import calculate_average_values #just for debugging, remove later.
 
 
@@ -53,41 +53,38 @@ def Data_viz_preprocessing():
     st.subheader("MITBIH Dataset")
     img1 = Image.open("../assets/Report1_Fig11_Mitbih_resampling.bmp")
     # Plot the image
-    st.image(img1)
+    st.image(img1, caption="Fig 6: Original (left) and resampled (middle, right) distribution of classes for the MITBIH dataset. Test and train set are distributed in the same way.")
 
     st.subheader("PTBDB Dataset")
     img2 = Image.open("../assets/Report1_Fig12_Ptbdb_resampling.png")
     # Plot the image
-    st.image(img2)
+    st.image(img2, caption="Fig 7: Original (left) and resampled (middle, right) distribution of classes for the PTBDB dataset after concatening.")
 
-    st.subheader("Outlier Detection (Mitbih Dataset)")
+    st.header("Outlier Detection")
+    st.subheader("First evaluation with boxplots (Mitbih)")
     img3 = Image.open("../assets/Report1_Fig7_Mitbih.png")
     # Plot the image
-    st.image(img3)
+    st.image(img3, caption="Fig 8: Outlier detection with box plot for the MITBIH Dataset and Normal (N) class. Zoomed subplot shows the details.)")
 
-    st.subheader("Correlation Matrix for Original data")
+    st.subheader("Further Evaluation with quantile based removal of outliers") 
+    st.write("To further evaluate how outliers would influence the heartbeat shape and thus possibly the results of an examination (either manually or with machine learning) we show the effect of outliers on the overall shape of an heartbeat.")
+    
+    dataset_selected = st.radio("Select the Dataset", ["MITBIH (Trainset)", "PTBDB (Concated set)"])
+    lower_quantile = st.slider("Lower Quantile", min_value=0.0, max_value=0.5, value=0.25, step=0.05)
+    upper_quantile = st.slider("Upper Quantile", min_value=0.5, max_value=1.0, value=0.75, step=0.05)
+    if dataset_selected == "MITBIH (Trainset)":
+         plot_with_outliers(mitbih_train, lower_quantile=lower_quantile, upper_quantile=upper_quantile)
+    if dataset_selected == "PTBDB (Concated set)":
+         data =  pd.concat([ptbdb_abnormal, ptbdb_normal], ignore_index=True).sample(frac=1, random_state=42) #short concatening
+         plot_with_outliers(data, lower_quantile=lower_quantile, upper_quantile=upper_quantile)
 
-    comparison_method = st.radio("Select the Dataset", ["MITBIH", "PTBDB"])
 
+    st.header("Correlation Matrix for Original data")
 
-    st.header(":red[Notes for further Improvement:]")
-    st.write("- Usage of only Mitbih train and test as plots is not that useful. Use Mitbih test and ptbdb concateted")
-    st.write("- Include function and show function code to generate test and train dataset from ptbdb. Also show over- and undersampling techniques and create datasets that are stored as variables for the app.")
-    st.write("- Keep random plotting and maybe add selection switches")
-    st.write("- Show a correlation matrix for selected datasets --> Can be copied from Notebook 1 essentially and modifided with selection switches")
-    st.write("- Plot the outlier detection as function: Use sliders to configure how sensitive the outliers should be detected and show the result as hearbeat avg plot (difference between original values and with outliers removed)")
-    st.write("- Basic statistics with pie plots and heartbeat shapes --> These can be shown generally and all functions (with sliders) above dynamically adjust these basic statistics plots?")
-    """
-    This function is not used in the final presentation, but could serve as an example on how to select our datasets.
-    #debugging the calculate averages function --> Can be used for further functions with selections of one dataset.
-    is_check_output_avg_values = st.checkbox("Test the outpout of the calculate average values function:")
-    if is_check_output_avg_values:
-         debug_avg_values = calculate_average_values(dataset_folder = data_path,
-                                                     dataset_names = ["mitbih_test.csv", "mitbih_train.csv", "ptbdb_abnormal.csv", "ptbdb_normal.csv"])
-         selected_key = st.selectbox("Select a dataset key:", options=list(debug_avg_values.keys()))
-         st.write(f"Key: {selected_key}")
-         st.write(debug_avg_values[selected_key])
-         for i, class_avg in enumerate(debug_avg_values[selected_key]):
-            #class_label = disease_names_mitbih[i]
-            plt.plot(class_avg, linestyle='--', alpha=0.8) #, label=f"{class_label} Average", , color=color_palette[i],
-         st.pyplot()"""
+    comparison_method = st.radio("Select the Dataset", ["MITBIH (Trainset)", "PTBDB (Concated set)"], key="Selection for Correlation Matrix")
+    if comparison_method == "MITBIH (Trainset)":
+         plot_correlation_matrix(mitbih_train, selected_dataset="MITBIH (Train)")
+    if comparison_method == "PTBDB (Concated set)":
+         data =  pd.concat([ptbdb_abnormal, ptbdb_normal], ignore_index=True).sample(frac=1, random_state=42) #short concatening
+         plot_correlation_matrix(data, selected_dataset="PTBDB (concatenated)")
+

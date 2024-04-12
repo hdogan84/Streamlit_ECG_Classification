@@ -10,6 +10,7 @@ from Predict_with_ML_models_v2 import Page_ML_Stage_2
 from DL_Model_Summaries import Page_DL_Stage_1
 from Predict_with_DL_models import Page_DL_Stage_2
 from Literature_page import Literature # Literatur page function
+from Outlook_page import Outlook
 
 def main():
 
@@ -41,13 +42,19 @@ def main():
         st.title("Comparisons & Bibliography")
         Literature()
     elif menu == liste_menu[6]:
-        st.title("Here we present our conclusions and outlooks (this can be just a short summary of the final report anyway and emails for job inquiries.))")
-        st.header("therefore a new submodule with specific functions has to be created.")
+        st.title("Conclusions and Outlook")
+        Outlook()
     elif menu == liste_menu[7]:
-        st.title("Here we present the Members of our Team.")
-        st.header("therefore a new submodule with specific functions has to be created. It could link to the linked in page etc.")
-        st.write("Simon Dommer:")
-        st.markdown("Expert in nothing.")
+        st.title("We proudly present the Members of the Heartbeat Team")
+        st.subheader("Simon:")
+        st.markdown("Mechanical Engineer with keen interest in DataScience and Machine Learning.")
+
+        st.subheader("Alex:")
+        st.markdown("Former Data Analyst with a hand for the right words in difficult situations")
+
+        st.subheader("Hakan:")
+        st.markdown("The only real scientist in the Team.")
+
 
 if __name__ == '__main__':
     main()

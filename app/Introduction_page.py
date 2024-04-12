@@ -16,14 +16,14 @@ def Introduction():
 
     ## MEDIA
     st.header("Overview on the workflow")
-    displayPDF("../assets/Workflow_Heartbeat.pdf", width=800, height=500, caption="The workflow used in the project. Steps with green checks were performed already by the original authors of the main paper.")
+    displayPDF("../assets/Workflow_Heartbeat.pdf", width=800, height=500, caption="Fig 1: The workflow used in the project. Steps with green checks were performed already by the original authors of the main paper.")
 
     from PIL import Image
     st.header("Dataset Information")
      # open an image
     img = Image.open("../assets/Report1_Table1.png")
     # Plot the image
-    st.image(img)
+    st.image(img, caption="Fig 2: General Information about the raw datasets acquired from Kaggle.")
 
     # MITBIH data
     st.subheader("Classwise Distribution for MITBIH")
@@ -31,7 +31,7 @@ def Introduction():
     st.text(mitbih_text)
     img2 = Image.open("../assets/Report1_Fig1.png")
     # Plot the image
-    st.image(img2)
+    st.image(img2, caption="Fig 3: Distribution of classes in the test and train MITBIH Datasets.")
     
     # MITBIH data
     st.subheader("Classwise Distribution for PTBDB")
@@ -39,13 +39,10 @@ def Introduction():
     st.text(ptb_text)
     img3 = Image.open("../assets/Report1_Fig12_Ptbdb_original.bmp")
     # Plot the image
-    st.image(img3)
+    st.image(img3, width=350, caption="Fig 4: Distribution of classes in the PTBDB Dataset after concatenating.")
+
 
     #More Information
     st.header("For More Information on the projects background:")
     st.write("Explore the full original research paper at: [IEEE Xplore](https://ieeexplore.ieee.org/document/8419425)")
     st.write("Explore the original dataset at: [Kaggle](https://www.kaggle.com/datasets/shayanfazeli/heartbeat)")
-
-    st.header(":red[Notes for further Improvement]")
-    st.write("Use higher quality pictures or generate the pictures from data. Also include classwise distribution plot for PTBDB.")
-
