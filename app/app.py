@@ -53,7 +53,7 @@ def main():
         st.markdown("Former Data Analyst with a hand for the right words in difficult situations")
 
         st.subheader("Hakan:")
-        st.markdown("The only real scientist in the Team.")
+        st.markdown("Researcher with PhD in acoustics")
 
 
 if __name__ == '__main__':
