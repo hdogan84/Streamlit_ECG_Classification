@@ -8,7 +8,7 @@ def Literature():
     st.header("Comparison with other models on Kaggle")
     img = Image.open("../assets/ComparisonLiterature.png")
     # Plot the image
-    st.image(img)
+    st.image(img, caption="Fig 12: Literature review and comparison with our own CNN Models for the heartbeat classification task.")
     
     ## References
     st.header("References")
